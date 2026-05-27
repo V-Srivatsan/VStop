@@ -1,0 +1,206 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:7844094307121961881",
+      "lastPropertyId": "5:9089118697839389399",
+      "name": "Course",
+      "properties": [
+        {
+          "id": "1:8936503331894796738",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:395996700373799160",
+          "name": "code",
+          "indexId": "1:369789311095140994",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:7508470092222060500",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "4:2245873148290158071",
+          "name": "credits",
+          "type": 8
+        },
+        {
+          "id": "5:9089118697839389399",
+          "name": "categoryId",
+          "indexId": "2:7877234235765099062",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "CourseCategory"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:2720387347581765818",
+      "lastPropertyId": "3:6726769845492668866",
+      "name": "CourseCategory",
+      "properties": [
+        {
+          "id": "1:524275998739425411",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6195766448838331458",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "3:6726769845492668866",
+          "name": "credits",
+          "type": 8
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "3:4060590762657634343",
+      "lastPropertyId": "9:694127090680062561",
+      "name": "TimetableEntry",
+      "properties": [
+        {
+          "id": "1:7708179698590844541",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:7544626279304994854",
+          "name": "courseId",
+          "indexId": "3:4589828323854872255",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Course"
+        },
+        {
+          "id": "3:7505511048872955305",
+          "name": "semesterId",
+          "indexId": "4:1847986806794642497",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Semester"
+        },
+        {
+          "id": "4:5304737439253035548",
+          "name": "classId",
+          "indexId": "5:2171716177972790791",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "5:1012947021753690918",
+          "name": "slots",
+          "type": 30
+        },
+        {
+          "id": "6:6559921473306589126",
+          "name": "venue",
+          "type": 9
+        },
+        {
+          "id": "7:245033133731239501",
+          "name": "present",
+          "type": 30
+        },
+        {
+          "id": "8:1182395416499823664",
+          "name": "absent",
+          "type": 30
+        },
+        {
+          "id": "9:694127090680062561",
+          "name": "grade",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:8601934540853103441",
+      "lastPropertyId": "3:7471720729926564186",
+      "name": "Semester",
+      "properties": [
+        {
+          "id": "1:6272342418897829558",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2018849150038441487",
+          "name": "code",
+          "indexId": "6:4207088616384992041",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "3:7471720729926564186",
+          "name": "name",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "5:8359651986574788630",
+      "lastPropertyId": "5:3778868705849972652",
+      "name": "Mark",
+      "properties": [
+        {
+          "id": "1:4036868712142612477",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:1348410033699449340",
+          "name": "entryId",
+          "indexId": "7:8093373955574509094",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "TimetableEntry"
+        },
+        {
+          "id": "3:7135166959353976887",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "4:2208526695333411979",
+          "name": "score",
+          "type": 8
+        },
+        {
+          "id": "5:3778868705849972652",
+          "name": "maxScore",
+          "type": 8
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "5:8359651986574788630",
+  "lastIndexId": "7:8093373955574509094",
+  "lastRelationId": "0:0",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}
