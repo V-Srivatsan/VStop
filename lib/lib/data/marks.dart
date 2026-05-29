@@ -65,6 +65,11 @@ class MarkStore {
       _box.putMany(all_marks);
     }();
     final grades_req = () async {
+
+      final currEntries = (entryBox.query()..link(TimetableEntry_.semester, Semester_.id.equals(sem.id))).build().find();
+      for (int i=0; i < currEntries.length; i++) currEntries[i].grade = null;
+      entryBox.putMany(currEntries);
+
       final res = await WebView.request(
         "https://vtopcc.vit.ac.in/vtop/examinations/examGradeView/doStudentGradeView",
         { "semesterSubId": sem.code }
@@ -77,7 +82,9 @@ class MarkStore {
         final courseCode = row.children[1].text!.trim();
         final grade = row.children[10].text!.trim();
 
-        final query = entryBox.query()..link(TimetableEntry_.course, Course_.code.equals(courseCode));
+        final query = entryBox.query()
+          ..link(TimetableEntry_.semester, Semester_.id.equals(sem.id))
+          ..link(TimetableEntry_.course, Course_.code.equals(courseCode));
         final e = query.build().find();
         entries.addAll(e.map((e) { e.grade = grade; return e; }));
       }
@@ -112,6 +119,7 @@ class MarkStore {
     final Map<String, TimetableEntry> tt_entries = {};
 
     for (Mark mark in data) {
+      if (mark.entry.target!.grade != null) continue;
       final classId = mark.entry.target!.classId;
       final curr = marks.putIfAbsent(classId, () => (0.0, 0.0));
       marks[classId] = (curr.$1 + mark.score, curr.$2 + mark.maxScore);
@@ -122,10 +130,10 @@ class MarkStore {
     List<TimetableEntry> modified = [];
     for (String classId in marks.keys) {
 
-      final entry = tt_entries[classId]!; final course = entry.course.target!;
-      if (entry.grade != null) continue;
-      Map<String, dynamic>? markData;
+      final entry = tt_entries[classId]!;
+      final course = entry.course.target!;
 
+      Map<String, dynamic>? markData;
       if (course.isRelativeGraded()) {
         final snapshot = await firestore.getDoc(classId);
 
@@ -136,7 +144,7 @@ class MarkStore {
         await firestore.setDoc(snapshot, { auth: marks[classId]!.$1 });
       }
 
-      entry.grade = getGrade(
+      entry.grade = '*' + getGrade(
         courseCode: course.code, entries: markData,
         score: marks[classId]!.$1, maxScore: marks[classId]!.$2
       ); modified.add(entry);

@@ -12,10 +12,11 @@ class MarkTile extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final isDark = Theme.of(context).brightness == .dark;
+    final isEst = grade != null && grade!.length == 2;
 
     return Card(child: ListTile(
       title: Text(name), onTap: onTap,
-      subtitle: grade == null ? null : Text("Grade: $grade"),
+      subtitle: grade == null ? null : Text("Grade${isEst ? ' (est)' : ''}: ${isEst ? grade![1] : grade}"),
       trailing: Stack(
         alignment: .center,
         children: [

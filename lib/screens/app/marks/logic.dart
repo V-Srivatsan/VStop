@@ -19,7 +19,7 @@ void syncMarks(
       final marks = store.getMarks();
       if (marks.values.isNotEmpty) await MarkStore.syncToFirestore(marks.values.reduce((c, e) => c+e));
 
-      setState(false, marks);
+      setState(false, store.getMarks());
     }),
   ));
 }
