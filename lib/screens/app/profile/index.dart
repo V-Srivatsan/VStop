@@ -52,7 +52,7 @@ class Screen extends StatelessWidget {
               )
             ]),
 
-            Text("Developed by V Srivatsan")
+            Text("Developed by V Srivatsan", textAlign: .center)
 
           ],
         ),
