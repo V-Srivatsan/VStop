@@ -53,17 +53,27 @@ class AttendanceView extends StatefulWidget {
 
 class _AttendanceViewState extends State<AttendanceView> {
 
+  late final int minMonth, minYear, maxMonth, maxYear;
   int month = 0, year = 0;
   Map<String, bool> attendance = {};
 
   @override
   void initState() {
     super.initState();
-    final now = DateTime.now();
-    month = now.month; year = now.year;
+    final lastEntry = DateTime.parse(
+      widget.present.isEmpty ? widget.absent.first :
+      widget.absent.isEmpty ? widget.present.first :
+      widget.present.first.compareTo(widget.absent.first) < 0 ? widget.absent.first : widget.present.first
+    ), firstEntry = DateTime.parse(
+      widget.present.isEmpty ? widget.absent.last :
+      widget.absent.isEmpty ? widget.present.last :
+      widget.present.last.compareTo(widget.absent.last) > 0 ? widget.absent.last : widget.present.last
+    );
+    month = maxMonth = lastEntry.month; year = maxYear = lastEntry.year;
+    minMonth = firstEntry.month; minYear = firstEntry.year;
+
     for (var p in widget.present) attendance[p] = true;
     for (var a in widget.absent) attendance[a] = false;
-    print(attendance);
   }
 
   @override
@@ -91,7 +101,7 @@ class _AttendanceViewState extends State<AttendanceView> {
           mainAxisSize: .min,
           children: [
             IconButton(
-              onPressed: () {
+              onPressed: year == minYear && month == minMonth ? null : () {
                 if (month == 1) year--;
                 setState(() => month = month == 1 ? 12 : month-1);
               },
@@ -99,7 +109,7 @@ class _AttendanceViewState extends State<AttendanceView> {
             ),
             Text("${MONTHS[month-1]} $year"),
             IconButton(
-              onPressed: () {
+              onPressed: year == maxYear && month == maxMonth ? null : () {
                 if (month == 12) year++;
                 setState(() => month = month == 12 ? 1 : month+1);
               },
