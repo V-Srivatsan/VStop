@@ -61,5 +61,5 @@ void syncData(BuildContext ctx) =>
   ));
 
 void shareApp() => SharePlus.instance.share(ShareParams(
-    text: "Check out this one-stop solution for V-TOP: V-STOP! Download here: https://github.com/V-Srivatsan/VStop/releases"
+    text: "Check out this one-stop solution for V-TOP: V-STOP!\n\nDownload here: https://github.com/V-Srivatsan/VStop/releases/latest"
 ));

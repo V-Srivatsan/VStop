@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:7844094307121961881",
-      "lastPropertyId": "5:9089118697839389399",
+      "lastPropertyId": "6:9157582254565902923",
       "name": "Course",
       "properties": [
         {
@@ -19,7 +19,7 @@
           "name": "code",
           "indexId": "1:369789311095140994",
           "type": 9,
-          "flags": 2080
+          "flags": 34848
         },
         {
           "id": "3:7508470092222060500",
@@ -38,13 +38,18 @@
           "type": 11,
           "flags": 520,
           "relationTarget": "CourseCategory"
+        },
+        {
+          "id": "6:9157582254565902923",
+          "name": "type",
+          "type": 9
         }
       ],
       "relations": []
     },
     {
       "id": "2:2720387347581765818",
-      "lastPropertyId": "3:6726769845492668866",
+      "lastPropertyId": "4:6310751137202083207",
       "name": "CourseCategory",
       "properties": [
         {
@@ -62,6 +67,11 @@
           "id": "3:6726769845492668866",
           "name": "credits",
           "type": 8
+        },
+        {
+          "id": "4:6310751137202083207",
+          "name": "code",
+          "type": 9
         }
       ],
       "relations": []

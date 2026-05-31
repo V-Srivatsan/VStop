@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:vstop/theme.dart' as theme;
 import 'logic.dart' as logic;
 
+import 'screens/courses/index.dart' as courses;
 import 'screens/privacy.dart' as privacy;
 
 class Screen extends StatelessWidget {
@@ -22,20 +23,8 @@ class Screen extends StatelessWidget {
 
             Section([
               ListTile(
-                title: Text("Change Theme"), leading: Icon(Icons.brightness_medium),
-                onTap: () => logic.updateTheme(context),
-              )
-            ]),
-            
-            Section([
-              ListTile(
-                title: Text("Share App"), leading: Icon(Icons.share),
-                onTap: () => logic.shareApp(),
-              ),
-
-              ListTile(
-                title: Text("Privacy Policy"), leading: Icon(Icons.privacy_tip_outlined),
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => privacy.Screen())),
+                title: Text("My Courses"), leading: Icon(Icons.book_outlined),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => courses.Screen())),
               )
             ]),
 
@@ -44,7 +33,26 @@ class Screen extends StatelessWidget {
                 title: Text("Sync Data"), leading: Icon(Icons.sync),
                 onTap: () => logic.syncData(context),
               ),
+            ]),
+            
+            Section([
+              ListTile(
+                title: Text("Change Theme"), leading: Icon(Icons.brightness_medium),
+                onTap: () => logic.updateTheme(context),
+              ),
+              Divider(),
+              ListTile(
+                title: Text("Share App"), leading: Icon(Icons.share),
+                onTap: () => logic.shareApp(),
+              ),
+              Divider(),
+              ListTile(
+                title: Text("Privacy Policy"), leading: Icon(Icons.privacy_tip_outlined),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => privacy.Screen())),
+              )
+            ]),
 
+            Section([
               ListTile(
                 title: Text("Logout", style: TextStyle(color: Colors.white)),
                 leading: Icon(Icons.logout, color: Colors.white), tileColor: warning,

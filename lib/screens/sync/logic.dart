@@ -1,5 +1,6 @@
 import 'package:vstop/lib/data/index.dart';
 import 'package:vstop/lib/data/profile.dart';
+import 'package:vstop/lib/data/course.dart';
 import 'package:vstop/lib/data/sem.dart';
 import 'package:vstop/lib/data/timetable.dart';
 import 'package:vstop/lib/data/attendance.dart';
@@ -14,7 +15,10 @@ Future<bool> syncData(int Function(int, String) update) async {
   p = update(15, "Figuring out who you are...");
   await fetchProfile();
 
-  p = update(30, "Checking what you went through...");
+  p = update(30, "Downloading your journey...");
+  await CourseStore.fetch();
+
+  p = update(40, "Checking what you went through...");
   await SemStore.fetch();
   final sems = SemStore.getSems();
   await PrefStore.setSem(sems.first.code);

@@ -25,7 +25,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(1, 7844094307121961881),
     name: 'Course',
-    lastPropertyId: const obx_int.IdUid(5, 9089118697839389399),
+    lastPropertyId: const obx_int.IdUid(6, 9157582254565902923),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -38,7 +38,7 @@ final _entities = <obx_int.ModelEntity>[
         id: const obx_int.IdUid(2, 395996700373799160),
         name: 'code',
         type: 9,
-        flags: 2080,
+        flags: 34848,
         indexId: const obx_int.IdUid(1, 369789311095140994),
       ),
       obx_int.ModelProperty(
@@ -62,14 +62,26 @@ final _entities = <obx_int.ModelEntity>[
         relationField: 'category',
         relationTarget: 'CourseCategory',
       ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(6, 9157582254565902923),
+        name: 'type',
+        type: 9,
+        flags: 0,
+      ),
     ],
     relations: <obx_int.ModelRelation>[],
-    backlinks: <obx_int.ModelBacklink>[],
+    backlinks: <obx_int.ModelBacklink>[
+      obx_int.ModelBacklink(
+        name: 'entries',
+        srcEntity: 'TimetableEntry',
+        srcField: 'course',
+      ),
+    ],
   ),
   obx_int.ModelEntity(
     id: const obx_int.IdUid(2, 2720387347581765818),
     name: 'CourseCategory',
-    lastPropertyId: const obx_int.IdUid(3, 6726769845492668866),
+    lastPropertyId: const obx_int.IdUid(4, 6310751137202083207),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -88,6 +100,12 @@ final _entities = <obx_int.ModelEntity>[
         id: const obx_int.IdUid(3, 6726769845492668866),
         name: 'credits',
         type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 6310751137202083207),
+        name: 'code',
+        type: 9,
         flags: 0,
       ),
     ],
@@ -299,7 +317,13 @@ obx_int.ModelDefinition getObjectBoxModel() {
     Course: obx_int.EntityDefinition<Course>(
       model: _entities[0],
       toOneRelations: (Course object) => [object.category],
-      toManyRelations: (Course object) => {},
+      toManyRelations: (Course object) => {
+        obx_int.RelInfo<TimetableEntry>.toOneBacklink(
+          2,
+          object.id,
+          (TimetableEntry srcObject) => srcObject.course,
+        ): object.entries,
+      },
       getId: (Course object) => object.id,
       setId: (Course object, int id) {
         object.id = id;
@@ -307,12 +331,14 @@ obx_int.ModelDefinition getObjectBoxModel() {
       objectToFB: (Course object, fb.Builder fbb) {
         final codeOffset = fbb.writeString(object.code);
         final nameOffset = fbb.writeString(object.name);
-        fbb.startTable(6);
+        final typeOffset = fbb.writeString(object.type);
+        fbb.startTable(7);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, codeOffset);
         fbb.addOffset(2, nameOffset);
         fbb.addFloat64(3, object.credits);
         fbb.addInt64(4, object.category.targetId);
+        fbb.addOffset(5, typeOffset);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -331,6 +357,9 @@ obx_int.ModelDefinition getObjectBoxModel() {
         final nameParam = const fb.StringReader(
           asciiOptimization: true,
         ).vTableGet(buffer, rootOffset, 8, '');
+        final typeParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 14, '');
         final creditsParam = const fb.Float64Reader().vTableGet(
           buffer,
           rootOffset,
@@ -341,6 +370,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
           id: idParam,
           code: codeParam,
           name: nameParam,
+          type: typeParam,
           credits: creditsParam,
         );
         object.category.targetId = const fb.Int64Reader().vTableGet(
@@ -350,6 +380,15 @@ obx_int.ModelDefinition getObjectBoxModel() {
           0,
         );
         object.category.attach(store);
+        obx_int.InternalToManyAccess.setRelInfo<Course>(
+          object.entries,
+          store,
+          obx_int.RelInfo<TimetableEntry>.toOneBacklink(
+            2,
+            object.id,
+            (TimetableEntry srcObject) => srcObject.course,
+          ),
+        );
         return object;
       },
     ),
@@ -363,10 +402,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
       },
       objectToFB: (CourseCategory object, fb.Builder fbb) {
         final nameOffset = fbb.writeString(object.name);
-        fbb.startTable(4);
+        final codeOffset = fbb.writeString(object.code);
+        fbb.startTable(5);
         fbb.addInt64(0, object.id);
         fbb.addOffset(1, nameOffset);
         fbb.addFloat64(2, object.credits);
+        fbb.addOffset(3, codeOffset);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -379,6 +420,9 @@ obx_int.ModelDefinition getObjectBoxModel() {
           4,
           0,
         );
+        final codeParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 10, '');
         final nameParam = const fb.StringReader(
           asciiOptimization: true,
         ).vTableGet(buffer, rootOffset, 6, '');
@@ -390,6 +434,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
         );
         final object = CourseCategory(
           id: idParam,
+          code: codeParam,
           name: nameParam,
           credits: creditsParam,
         );
@@ -622,6 +667,16 @@ class Course_ {
   static final category = obx.QueryRelationToOne<Course, CourseCategory>(
     _entities[0].properties[4],
   );
+
+  /// See [Course.type].
+  static final type = obx.QueryStringProperty<Course>(
+    _entities[0].properties[5],
+  );
+
+  /// see [Course.entries]
+  static final entries = obx.QueryBacklinkToMany<TimetableEntry, Course>(
+    TimetableEntry_.course,
+  );
 }
 
 /// [CourseCategory] entity fields to define ObjectBox queries.
@@ -639,6 +694,11 @@ class CourseCategory_ {
   /// See [CourseCategory.credits].
   static final credits = obx.QueryDoubleProperty<CourseCategory>(
     _entities[1].properties[2],
+  );
+
+  /// See [CourseCategory.code].
+  static final code = obx.QueryStringProperty<CourseCategory>(
+    _entities[1].properties[3],
   );
 }
 
