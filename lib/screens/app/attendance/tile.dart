@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:vstop/lib/data/timetable.dart';
-import 'package:vstop/theme.dart' as theme;
 
 class AttendanceTile extends StatelessWidget {
-  final TimetableEntry entry;
-  const AttendanceTile(this.entry, {super.key});
+  final TimetableEntry entry; final double thres;
+  const AttendanceTile(this.entry, {super.key, required this.thres });
 
   @override
   Widget build(BuildContext context) {
 
     return Card(child: ListTile(
       title: Text(entry.course.target!.name),
+      leading: Icon(entry.isLab ? Icons.science : Icons.book),
       trailing: Stack(
         alignment: .center,
         children: [
-          CircularProgressIndicator(value: entry.percentage, constraints: .tight(Size(50, 50))),
+          CircularProgressIndicator(
+            value: entry.percentage, constraints: .tight(Size(50, 50)),
+            color: entry.percentage >= thres ? null : Theme.of(context).colorScheme.error,
+          ),
           Text("${(entry.percentage * 100).round()}%"),
         ],
       ),
@@ -57,14 +60,16 @@ class _AttendanceViewState extends State<AttendanceView> {
   int month = 0, year = 0;
   Map<String, bool> attendance = {};
 
+  DateTime _parseDate(String s) => DateTime.parse(s.endsWith('.') ? s.substring(0, s.length-1) : s);
+
   @override
   void initState() {
     super.initState();
-    final lastEntry = DateTime.parse(
+    final lastEntry = _parseDate(
       widget.present.isEmpty ? widget.absent.first :
       widget.absent.isEmpty ? widget.present.first :
       widget.present.first.compareTo(widget.absent.first) < 0 ? widget.absent.first : widget.present.first
-    ), firstEntry = DateTime.parse(
+    ), firstEntry = _parseDate(
       widget.present.isEmpty ? widget.absent.last :
       widget.absent.isEmpty ? widget.present.last :
       widget.present.last.compareTo(widget.absent.last) > 0 ? widget.absent.last : widget.present.last
@@ -80,9 +85,8 @@ class _AttendanceViewState extends State<AttendanceView> {
   Widget build(BuildContext context) {
 
     List<List<String>> rows = [["M", "T", "W", "T", "F", "S", "S"]];
-    final isDark = Theme.of(context).brightness == .dark;
-    final success = isDark ? theme.VStopColors.darkSuccess : theme.VStopColors.lightSuccess,
-      warning = isDark ? theme.VStopColors.darkWarning : theme.VStopColors.lightWarning;
+    final success = Theme.of(context).colorScheme.primary,
+      warning = Theme.of(context).colorScheme.error;
 
     DateTime curr = DateTime(year, month);
     while (curr.month == month) {
@@ -131,13 +135,14 @@ class _AttendanceViewState extends State<AttendanceView> {
                   return Expanded(child: Container(
                     width: 25, height: 25,
                     decoration: BoxDecoration(
-                        shape: .circle,
-                        color: present == null ? Colors.transparent : present ? success : warning
+                      shape: .circle,
+                      color: present == null ? Colors.transparent : present ? success : warning,
+                      border: attendance['$key.'] == true ? .all(color: success) : null
                     ),
                     child: Center(child: Text(
                       day, textAlign: .center,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: present == null ? null : isDark || present ? Colors.black : Colors.white
+                        color: present == null ? null : present ? Colors.black : Colors.white
                       ),
                     )),
                   ));

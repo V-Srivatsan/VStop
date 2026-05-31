@@ -30,7 +30,12 @@ class PrefStore {
   static Future<void> setName(String name) async => await _store.setString("name", name);
   static Future<String> getName() async => (await _store.getString("name"))!;
 
-
+  static Future<int> getAttThreshold() async {
+    final res = await _store.getInt("attThreshold");
+    if (res == null) setAttThreshold(75);
+    return res ?? 75;
+  }
+  static Future<void> setAttThreshold(int val) async => await _store.setInt("attThreshold", val);
 
   static ValueNotifier<ThemeMode> theme = ValueNotifier<ThemeMode>(.system);
   static Future<void> setTheme(bool? dark) async {
