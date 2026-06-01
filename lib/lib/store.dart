@@ -3,6 +3,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart' show ThemeMode;
 
+enum AppTheme { system, light, dark, amoled }
+
 class SecureStorage {
   static final _storage = FlutterSecureStorage();
 
@@ -37,17 +39,32 @@ class PrefStore {
   }
   static Future<void> setAttThreshold(int val) async => await _store.setInt("attThreshold", val);
 
-  static ValueNotifier<ThemeMode> theme = ValueNotifier<ThemeMode>(.system);
-  static Future<void> setTheme(bool? dark) async {
-    if (dark == null) await _store.remove("darkTheme");
-    else await _store.setBool("darkTheme", dark);
-    if (dark == null) theme.value = .system;
-    else theme.value = dark ? .dark : .light;
+
+  static ValueNotifier<AppTheme> theme = ValueNotifier<AppTheme>(.system);
+  static Future<void> setTheme(AppTheme theme) async {
+    switch (theme) {
+      case .system:
+        _store.remove("darkTheme");
+        break;
+      case .light:
+        _store.setBool("darkTheme", false);
+        break;
+      case .dark:
+        _store.setBool("darkTheme", true);
+        _store.setBool("amoled", false);
+        break;
+      case .amoled:
+        _store.setBool("darkTheme", true);
+        _store.setBool("amoled", true);
+        break;
+    }
+    PrefStore.theme.value = theme;
   }
   static Future<void> getTheme() async {
     final dark = await _store.getBool("darkTheme");
+    final amoled = await _store.getBool("amoled") ?? false;
     if (dark == null) theme.value = .system;
-    else theme.value = dark ? .dark : .light;
+    else theme.value = dark ? (amoled ? .amoled : .dark) : .light;
   }
 
 

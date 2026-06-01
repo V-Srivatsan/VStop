@@ -21,8 +21,8 @@ Future<void> logout(BuildContext context) async {
 
 Future<void> updateTheme(BuildContext context) async {
 
-  void change(BuildContext ctx, bool? dark) async {
-    await PrefStore.setTheme(dark);
+  void change(BuildContext ctx, AppTheme theme) async {
+    await PrefStore.setTheme(theme);
     if (ctx.mounted) Navigator.pop(ctx);
   }
 
@@ -34,17 +34,22 @@ Future<void> updateTheme(BuildContext context) async {
 
         Card(child: ListTile(
           title: Text("Light Theme"), leading: Icon(Icons.light_mode),
-          onTap: () => change(ctx, false),
+          onTap: () => change(ctx, .light),
         )),
 
         Card(child: ListTile(
           title: Text("Dark Theme"), leading: Icon(Icons.dark_mode),
-          onTap: () => change(ctx, true),
+          onTap: () => change(ctx, .dark),
+        )),
+
+        Card(child: ListTile(
+          title: Text("AMOLED Theme"), leading: Icon(Icons.dark_mode_outlined),
+          onTap: () => change(ctx, .amoled),
         )),
 
         Card(child: ListTile(
           title: Text("System Theme"), leading: Icon(Icons.brightness_medium),
-          onTap: () => change(ctx, null),
+          onTap: () => change(ctx, .system),
         ))
 
       ],

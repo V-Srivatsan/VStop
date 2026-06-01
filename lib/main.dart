@@ -20,14 +20,14 @@ void main() async {
 
   FirebaseMessaging.onBackgroundMessage(FCMBackground);
 
-  runApp(ValueListenableBuilder<ThemeMode>(
+  runApp(ValueListenableBuilder<AppTheme>(
     valueListenable: PrefStore.theme,
     builder: (_, prefTheme, _) =>
       MaterialApp(
         title: 'V-STOP',
-        themeMode: prefTheme,
+        themeMode: (prefTheme == .system ? .system : (prefTheme == .light ? .light : .dark)),
         theme: theme.lightTheme,
-        darkTheme: theme.darkTheme,
+        darkTheme: prefTheme == .amoled ? theme.amoledTheme : theme.darkTheme,
         home: splash.Screen(),
       )
   ));
