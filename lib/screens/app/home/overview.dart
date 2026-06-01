@@ -4,7 +4,7 @@ import 'package:vstop/lib/data/sem.dart';
 import 'package:vstop/lib/data/timetable.dart';
 import 'timetable/logic.dart' show ScheduleClass;
 
-import 'package:vstop/screens/splash/index.dart' as splash;
+import 'package:vstop/screens/app/index.dart' as app;
 import 'package:vstop/widgets/display_card.dart';
 
 
@@ -97,7 +97,7 @@ class SemesterChange extends StatelessWidget {
                         onTap: () {
                           PrefStore.setSem(sem.code);
                           Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(builder: (c) => splash.Screen()),
+                              MaterialPageRoute(builder: (c) => app.Screen()),
                               (_) => false
                           );
                         },

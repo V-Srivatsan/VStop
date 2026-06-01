@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -18,24 +17,20 @@ class Screen extends StatelessWidget {
     NotificationService().initializeNotificationSystem();
 
     () async {
-      final latest = jsonDecode((await http.get(
-          Uri.parse("https://api.github.com/repos/V-Srivatsan/VStop/releases/latest")
-      )).body)['tag_name'];
-      final info = await PackageInfo.fromPlatform();
+      try {
+        final latest = jsonDecode((await http.get(
+            Uri.parse("https://api.github.com/repos/V-Srivatsan/VStop/releases/latest")
+        )).body)['tag_name'];
+        final info = await PackageInfo.fromPlatform();
 
-      if (latest != 'v${info.version}') {
-        PrefStore.clear(); SecureStorage.clear();
-        if (context.mounted)
-          showDialog(
+        if (latest != 'v${info.version}' && context.mounted)
+          await showDialog(
             context: context, barrierDismissible: false,
-            builder: (_) => AlertDialog(
+            builder: (ctx) => AlertDialog(
               title: Text("Update Available"),
               content: Text("A new version of V-Stop is available for download!\n\nPlease update to the latest version for the best experience."),
               actions: [
-                OutlinedButton(
-                  onPressed: () => SystemNavigator.pop(),
-                  child: Text("Exit")
-                ),
+                OutlinedButton(onPressed: () => Navigator.pop(ctx), child: Text("Continue")),
                 FilledButton(
                   onPressed: () => launchUrl(Uri.parse("https://github.com/V-Srivatsan/VStop/releases/latest")),
                   child: Text("Download")
@@ -43,7 +38,9 @@ class Screen extends StatelessWidget {
               ]
             )
           );
-      } else {
+
+      } catch (e) { print(e); }
+      finally {
         final logged = (await SecureStorage.get("username")) != null;
         if (context.mounted)
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx) =>
