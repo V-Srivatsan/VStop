@@ -468,7 +468,7 @@ final amoledTheme = ThemeData(
   ),
 
   dividerTheme: const DividerThemeData(
-    color: Color(0xFF1A1A1A),
+    color: Color(0xFF252525),
     thickness: 1,
     space: 1,
   ),
