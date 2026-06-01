@@ -115,19 +115,20 @@ class _SearchableListState extends State<SearchableList> {
             title: Text(filtered[i].name), subtitle: Text(filtered[i].code),
             trailing: Text(filtered[i].credits.toStringAsFixed(1)),
             leading: (
-                filtered[i].type == "TH" ? Icon(Icons.book) :
-                filtered[i].type == "LO" ? Icon(Icons.science) :
+                filtered[i].type == "TH" ? Icon(Icons.book_outlined) :
+                filtered[i].type == "LO" ? Icon(Icons.science_outlined) :
                 filtered[i].type == "OC" ? Icon(Icons.computer) :
+                filtered[i].type == "PJT" ? Icon(Icons.account_tree_outlined) :
                 Stack(
                   alignment: .center,
                   children: [
                     Transform.translate(
                       offset: .new(-5, -5),
-                      child: Icon(Icons.book),
+                      child: Icon(Icons.book_outlined),
                     ),
                     Transform.translate(
                       offset: .new(5, 5),
-                      child: Icon(Icons.science),
+                      child: Icon(Icons.science_outlined),
                     ),
                   ],
                 )
