@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'logic.dart' as logic;
 
+import 'screens/calendar/index.dart' as calendar;
 import 'screens/courses/index.dart' as courses;
 import 'screens/privacy.dart' as privacy;
 
@@ -15,6 +16,11 @@ class Screen extends StatelessWidget {
           children: [
 
             Section([
+              ListTile(
+                title: Text("Calendar"), leading: Icon(Icons.calendar_month),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => calendar.Screen())),
+              ),
+              Divider(),
               ListTile(
                 title: Text("My Courses"), leading: Icon(Icons.book_outlined),
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => courses.Screen())),

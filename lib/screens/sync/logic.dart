@@ -5,6 +5,7 @@ import 'package:vstop/lib/data/sem.dart';
 import 'package:vstop/lib/data/timetable.dart';
 import 'package:vstop/lib/data/attendance.dart';
 import 'package:vstop/lib/data/marks.dart';
+import 'package:vstop/lib/data/calendar.dart';
 
 import 'package:vstop/lib/store.dart';
 
@@ -43,6 +44,9 @@ Future<bool> syncData(int Function(int, String) update) async {
     p = update(p+sem_update, "Gathering undisclosed marks...");
     await MarkStore(sem.code).fetch();
   }
+
+  p = update(90, "Plotting your future...");
+  await AcademicCalendar.fetch();
 
   update(95, "Syncing academic trauma...");
   await MarkStore.syncToFirestore();
