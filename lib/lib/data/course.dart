@@ -29,7 +29,7 @@ class Course {
 
   bool get completed => (
     grade != null && !grade!.startsWith('*') &&
-    grade != 'F' && grade != 'N'
+    grade != 'F' && !grade!.contains('N')
   );
 
   @override bool operator ==(Object other) => (other is Course && code == other.code);
