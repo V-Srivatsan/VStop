@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vstop/screens/login/form.dart';
+import 'package:vstop/widgets/display_card.dart';
 import 'tile.dart';
 
 import 'package:vstop/lib/data/attendance.dart';
@@ -16,12 +17,12 @@ class Screen extends StatefulWidget {
 
 class _ScreenState extends State<Screen> {
   
-  String sem = "";
+  String sem = ""; int thres = 0;
   List<TimetableEntry> courses = [];
   bool syncing = false;
 
   void getCourses() {
-    final lst = Timetable(sem).getCourses();
+    final lst = Timetable(sem).getCourses().where((e) => !e.percentage.isNaN).toList();
     if (mounted) setState(() => courses = lst);
     else courses = lst;
   }
@@ -48,7 +49,10 @@ class _ScreenState extends State<Screen> {
         ]);
     });
 
-    () async { sem = await PrefStore.getSem(); getCourses(); }();
+    () async {
+      thres = await PrefStore.getAttThreshold();
+      sem = await PrefStore.getSem(); getCourses();
+    }();
   }
 
   @override
@@ -65,10 +69,78 @@ class _ScreenState extends State<Screen> {
             Text("Syncing...")
           ],
         )) :
-        ListView(children: courses.where((c) => !c.percentage.isNaN).map((c) => AttendanceTile(c)).toList()
-        )
+
+        CustomScrollView(slivers: [
+
+          SliverToBoxAdapter(child: Column(
+            mainAxisSize: .min, crossAxisAlignment: .stretch,
+            children: [
+
+              Row(
+                mainAxisAlignment: .spaceBetween, spacing: 10,
+                children: [
+                  DisplayCard(
+                    label: "OD Used",
+                    child: Text(
+                      '${courses.fold(0, (prev, e) => prev + e.od_used).toString()} / 40',
+                      style: Theme.of(context).textTheme.headlineMedium
+                    )
+                  ),
+
+                  DisplayCard(label: "Threshold", child: GestureDetector(
+                    onTap: () async {
+                      final res = await showDialog(context: context, builder: (_) => UpdateThreshold(thres));
+                      if (res != null) setState(() => thres = res);
+                    },
+                    child: Text(
+                      '$thres%',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                  ))
+                ],
+              ),
+
+              SizedBox(height: 15)
+            ]
+          )),
+
+          SliverList.builder(
+            itemCount: courses.length,
+            itemBuilder: (_, i) => AttendanceTile(courses[i], thres: thres / 100),
+          )
+
+        ])
+
       ),
     );
   }
 }
 
+
+class UpdateThreshold extends StatelessWidget {
+  final int curr;
+  UpdateThreshold(this.curr, {super.key});
+  final controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    controller.text = curr.toString();
+
+    return AlertDialog(
+      title: Text("Update Threshold"),
+      content: TextFormField(
+        controller: controller, keyboardType: .number,
+        decoration: InputDecoration(label: Text("Threshold %")),
+      ),
+      actions: [
+        OutlinedButton(onPressed: () => Navigator.pop(context), child: Text("Cancel")),
+        FilledButton(onPressed: () async {
+          int val = double.parse(controller.text).round();
+          val = val >= 100 ? 100 : val <= 0 ? 0 : val;
+          await PrefStore.setAttThreshold(val);
+          if (context.mounted) Navigator.pop(context, val);
+        }, child: Text("Update"))
+      ],
+    );
+  }
+}

@@ -10,7 +10,7 @@ class Screen extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(child: LayoutBuilder(builder: (ctx, constraints) =>
-        SingleChildScrollView( child: ConstrainedBox(
+        SingleChildScrollView(child: ConstrainedBox(
           constraints: BoxConstraints(minHeight: constraints.maxHeight),
           child: Center(child: Padding(
               padding: .symmetric(horizontal: 15),
@@ -23,7 +23,7 @@ class Screen extends StatelessWidget {
 
                   SizedBox(height: 10),
 
-                  LoginForm(onAuth: (ctx) => Navigator.pushReplacement(
+                  LoginForm(scrollable: false, onAuth: (ctx) => Navigator.pushReplacement(
                       ctx, MaterialPageRoute(builder: (_) => sync.Screen())
                   )),
                 ],

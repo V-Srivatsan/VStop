@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:vstop/lib/webview.dart';
 import 'package:vstop/lib/store.dart' show SecureStorage;
 
@@ -45,4 +46,5 @@ Future<(String, String)?> getCred() async {
 Future<void> saveCred(String username, String password) async {
   await SecureStorage.set("username", username);
   await SecureStorage.set("password", password);
+  await SecureStorage.set("syncVersion", (await PackageInfo.fromPlatform()).version);
 }

@@ -6,6 +6,7 @@ import 'package:vstop/objectbox.g.dart';
 import 'index.dart';
 import 'course.dart';
 import 'sem.dart';
+import 'marks.dart';
 
 @Entity()
 class TimetableEntry {
@@ -18,6 +19,9 @@ class TimetableEntry {
   List<String> present, absent;
   String? grade;
 
+  @Backlink('entry')
+  final marks = ToMany<Mark>();
+
   TimetableEntry({
     this.id = 0, required this.classId, required this.venue, this.grade,
     this.slots = const [], this.present = const [], this.absent = const []
@@ -28,6 +32,8 @@ class TimetableEntry {
     if (total == 0) return .nan;
     return present.length / total;
   }
+  int get od_used => present.where((e) => e.endsWith('.')).length;
+  bool get isLab => slots.any((s) => s.contains('L'));
 }
 
 
@@ -48,31 +54,12 @@ class Timetable {
     final rows = doc.querySelectorAll("table:not(#timeTableStyle) tr:not(:first-child):not(:last-child)");
 
     List<TimetableEntry> entries = [];
-    Map<String, double> seen_creds = {};
 
     for (var row in rows) {
       final children = row.children;
       if (children.length != 12) continue;
 
-      final uid = (children[2].text!.trim()).split(" - ");
-      final credits = double.parse(children[3].text!.trim().split(" ").last);
-      final cat = children[4].text!.split('(').first.trim();
-
-      final course = Course(
-          code: uid[0].trim(),
-          name: uid[1].split('(').first.trim(), credits: credits
-      );
-      course.category.target = CourseCategory(name: cat);
-      if (seen_creds[course.code] != null) {
-        course.credits += seen_creds[course.code]!;
-
-        final dbCourse = CourseStore.getCourse(course.code);
-        if (dbCourse != null) course.id = dbCourse.id;
-
-        seen_creds[course.code] = course.credits;
-      } else seen_creds[course.code] = course.credits;
-      CourseStore.addCourse(course);
-
+      final course = CourseStore.getCourse(children[2].text!.trim().split(" - ").first.trim())!;
       final loc = children[7].text!.trim().split("-");
       final slots = loc.length == 3 ? loc.first.trim().split("+") : null;
       final venue = loc.length == 3 ? '${loc[1].trim()}-${loc[2].trim()}' : null;
@@ -93,5 +80,15 @@ class Timetable {
     final res = query.find();
     query.close();
     return res;
+  }
+
+  Map<Course, List<TimetableEntry>> getCourseMap() {
+    final entries = getCourses();
+    final courseMap = <Course, List<TimetableEntry>>{};
+    for (var entry in entries) {
+      final course = entry.course.target!;
+      courseMap.putIfAbsent(course, () => []).add(entry);
+    }
+    return courseMap;
   }
 }

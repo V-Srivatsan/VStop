@@ -16,6 +16,13 @@ class VStopColors {
   static const darkSuccess       = Color(0xFF4CAF82);
   static const darkWarning       = Color(0xFFE05C5C);
 
+  // AMOLED
+  static const amoledBackground    = Color(0xFF000000);
+  static const amoledDialog        = Color(0xFF0D0D0D);
+  static const amoledSurface       = Color(0xFF0A0A0A);
+  static const amoledSurfaceVar    = Color(0xFF111111);
+  static const amoledCardHighlight = Color(0xFF0D1A1A);
+
   // Light
   static const lightBackground    = Color(0xFFF2F7F7);
   static const lightDialog        = Color(0xFFE8F0F0);
@@ -278,6 +285,190 @@ final darkTheme = ThemeData(
 
   dividerTheme: const DividerThemeData(
     color: Color(0xFF1E3E3E),
+    thickness: 1,
+    space: 1,
+  ),
+
+  listTileTheme: const ListTileThemeData(
+    contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+    textColor: VStopColors.darkTextPrimary,
+    iconColor: VStopColors.darkTeal,
+  ),
+);
+
+// ── AMOLED Theme ───────────────────────────────────────────────────────────────
+
+final amoledTheme = ThemeData(
+  useMaterial3: true,
+  brightness: Brightness.dark,
+  fontFamily: 'Inter',
+
+  colorScheme: const ColorScheme.dark(
+    surface:          VStopColors.amoledSurface,
+    primary:          VStopColors.darkTeal,
+    secondary:        VStopColors.darkAmber,
+    onSurface:        VStopColors.darkTextPrimary,
+    onPrimary:        VStopColors.amoledBackground,
+    onSecondary:      VStopColors.amoledBackground,
+    error:            VStopColors.darkWarning,
+    onError:          VStopColors.darkTextPrimary,
+    tertiary:         VStopColors.darkSuccess,
+    onSurfaceVariant: VStopColors.darkTextSecondary,
+  ),
+
+  scaffoldBackgroundColor: VStopColors.amoledBackground,
+
+  textTheme: _buildTextTheme(
+    VStopColors.darkTextPrimary,
+    VStopColors.darkTextSecondary,
+  ),
+
+  cardTheme: CardThemeData(
+    color: VStopColors.amoledCardHighlight,
+    elevation: 0,
+    shape: _cardShape,
+    margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 0),
+    shadowColor: Colors.transparent, // no shadow on AMOLED — pointless on black
+    clipBehavior: .hardEdge
+  ),
+
+  appBarTheme: const AppBarTheme(
+    backgroundColor: VStopColors.amoledBackground,
+    foregroundColor: VStopColors.darkTextPrimary,
+    elevation: 0,
+    scrolledUnderElevation: 0,
+    titleTextStyle: TextStyle(
+      fontFamily: 'Inter',
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+      color: VStopColors.darkTextPrimary,
+    ),
+    iconTheme: IconThemeData(color: VStopColors.darkTextPrimary),
+    actionsIconTheme: IconThemeData(color: VStopColors.darkAmber),
+  ),
+
+  bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: VStopColors.amoledSurface,
+      elevation: 8,
+      unselectedItemColor: VStopColors.darkTeal,
+      selectedItemColor: VStopColors.darkAmber
+  ),
+
+  dialogTheme: DialogThemeData(
+      backgroundColor: VStopColors.amoledDialog
+  ),
+
+  bottomSheetTheme: BottomSheetThemeData(
+      showDragHandle: true, modalBarrierColor: Colors.black.withAlpha(128),
+      backgroundColor: VStopColors.amoledDialog
+  ),
+
+  drawerTheme: const DrawerThemeData(
+    backgroundColor: VStopColors.amoledSurface,
+    elevation: 0,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.only(
+        topRight: Radius.circular(24),
+        bottomRight: Radius.circular(24),
+      ),
+    ),
+  ),
+
+  filledButtonTheme: FilledButtonThemeData(
+    style: FilledButton.styleFrom(
+      backgroundColor: VStopColors.darkAmber,
+      foregroundColor: VStopColors.amoledBackground,
+      textStyle: const TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 15,
+        fontWeight: FontWeight.w600,
+      ),
+      shape: const StadiumBorder(),
+      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+    ),
+  ),
+
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: OutlinedButton.styleFrom(
+      foregroundColor: VStopColors.darkTeal,
+      side: const BorderSide(color: VStopColors.darkTeal, width: 1.5),
+      textStyle: const TextStyle(
+        fontFamily: 'Inter',
+        fontSize: 15,
+        fontWeight: FontWeight.w500,
+      ),
+      shape: const StadiumBorder(),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+    ),
+  ),
+
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    backgroundColor: VStopColors.darkAmber,
+    foregroundColor: VStopColors.amoledBackground,
+    shape: StadiumBorder(),
+    elevation: 0,
+  ),
+
+  progressIndicatorTheme: ProgressIndicatorThemeData(
+      color: VStopColors.darkAmber,
+      linearTrackColor: VStopColors.amoledSurface
+  ),
+
+  inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: VStopColors.amoledSurface,
+    border: _inputBorder,
+    enabledBorder: _inputBorder,
+    focusedBorder: OutlineInputBorder(
+      borderRadius: const BorderRadius.all(Radius.circular(14)),
+      borderSide: const BorderSide(color: VStopColors.darkTeal, width: 1.5),
+    ),
+    hintStyle: const TextStyle(
+      color: VStopColors.darkTextSecondary,
+      fontFamily: 'Inter',
+      fontSize: 14,
+    ),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+  ),
+
+  tabBarTheme: TabBarThemeData(
+    labelColor: VStopColors.darkAmber,
+    unselectedLabelColor: VStopColors.darkTeal,
+    indicatorColor: VStopColors.darkAmber,
+    indicatorSize: TabBarIndicatorSize.tab,
+    indicator: BoxDecoration(
+      color: VStopColors.darkTeal.withOpacity(0.15),
+      borderRadius: BorderRadius.circular(20),
+    ),
+    dividerColor: Colors.transparent,
+    labelPadding: const EdgeInsets.symmetric(horizontal: 4),
+    labelStyle: const TextStyle(
+      fontFamily: 'Inter',
+      fontSize: 13,
+      fontWeight: FontWeight.w600,
+    ),
+    unselectedLabelStyle: const TextStyle(
+      fontFamily: 'Inter',
+      fontSize: 13,
+      fontWeight: FontWeight.w400,
+    ),
+  ),
+
+  chipTheme: ChipThemeData(
+    backgroundColor: VStopColors.amoledSurface,
+    selectedColor: VStopColors.darkTeal.withOpacity(0.2),
+    labelStyle: const TextStyle(
+      fontFamily: 'Inter',
+      fontSize: 13,
+      color: VStopColors.darkTextPrimary,
+    ),
+    side: BorderSide.none,
+    shape: const StadiumBorder(),
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+  ),
+
+  dividerTheme: const DividerThemeData(
+    color: Color(0xFF252525),
     thickness: 1,
     space: 1,
   ),

@@ -17,7 +17,7 @@ class MarkTile extends StatelessWidget {
     return Card(child: ListTile(
       title: Text(name), onTap: onTap,
       subtitle: grade == null ? null : Text("Grade${isEst ? ' (est)' : ''}: ${isEst ? grade![1] : grade}"),
-      trailing: Stack(
+      trailing: maxScore == 0 ? null : Stack(
         alignment: .center,
         children: [
           CircularProgressIndicator(

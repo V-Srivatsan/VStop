@@ -4,8 +4,8 @@ import 'package:vstop/lib/data/sem.dart';
 import 'package:vstop/lib/data/timetable.dart';
 import 'timetable/logic.dart' show ScheduleClass;
 
-import 'package:vstop/theme.dart' as theme;
-import 'package:vstop/screens/splash/index.dart' as splash;
+import 'package:vstop/screens/app/index.dart' as app;
+import 'package:vstop/widgets/display_card.dart';
 
 
 double getOverall(Semester? sem) {
@@ -28,10 +28,7 @@ class Overview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final isDark = Theme.of(context).brightness == .dark;
-    final amber = isDark ? theme.VStopColors.darkAmber : theme.VStopColors.lightAmber;
-    final teal = isDark ? theme.VStopColors.darkTeal : theme.VStopColors.lightTeal;
-    final text = isDark ? Colors.white : Colors.black;
+    final text = Theme.of(context).brightness == .dark ? Colors.white : Colors.black;
 
     final start = next == null ? '' :
       "${next!.start.inHours.toString().padLeft(2, '0')}:${next!.start.inMinutes.remainder(60).toString().padLeft(2, '0')}";
@@ -44,19 +41,26 @@ class Overview extends StatelessWidget {
           crossAxisAlignment: .stretch,
           children: [
             DisplayCard(
-              color: teal, label: "Attendance",
+              color: Theme.of(context).colorScheme.primary,
+              label: "Attendance",
               child: Text(
                 "${getOverall(sem).toStringAsFixed(2)}%",
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: text)
               )
             ),
             DisplayCard(
-              color: amber, label: "Next Class",
+              color: Theme.of(context).colorScheme.secondary,
+              label: "Next Class",
               child: Column(
                 mainAxisSize: .min, crossAxisAlignment: .stretch,
                 children: [
                   Text(start, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: text)),
-                  Text(next?.entry.venue! ?? '', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: amber, fontWeight: .bold)),
+                  Text(
+                      next?.entry.venue! ?? '',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: .bold,
+                        color: Theme.of(context).colorScheme.secondary
+                      )),
                 ],
               )
             )
@@ -66,33 +70,6 @@ class Overview extends StatelessWidget {
         SemesterChange(sem)
       ],
     );
-  }
-}
-
-
-class DisplayCard extends StatelessWidget {
-  final Color color;
-  final String label;
-  final Widget child;
-  const DisplayCard({super.key, required this.color, required this.label, required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(child: Card(
-      child: Container(
-        decoration: BoxDecoration(
-          border: .fromLTRB(left: .new(color: color, width: 5))
-        ),
-        child: Padding(
-          padding: .all(10),
-          child: Center(child: Column(
-            mainAxisAlignment: .center, mainAxisSize: .min,
-            crossAxisAlignment: .stretch, spacing: 10,
-            children: [Text(label, style: Theme.of(context).textTheme.labelMedium), child],
-          )),
-        ),
-      ),
-    ));
   }
 }
 
@@ -120,7 +97,7 @@ class SemesterChange extends StatelessWidget {
                         onTap: () {
                           PrefStore.setSem(sem.code);
                           Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(builder: (c) => splash.Screen()),
+                              MaterialPageRoute(builder: (c) => app.Screen()),
                               (_) => false
                           );
                         },

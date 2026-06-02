@@ -7,8 +7,11 @@ import 'package:vstop/screens/login/index.dart' as auth;
 import 'package:vstop/screens/sync/index.dart' as sync;
 import 'package:vstop/screens/login/form.dart';
 
+Future<bool> getEstimateGrades() async => await PrefStore.getPredictiveGrades();
+Future<void> setEstimateGrades(bool val) async => await PrefStore.setPredictiveGrades(val);
+
 Future<void> logout(BuildContext context) async {
-  Database.clear();
+  Database.clear(); await PrefStore.setTheme(.system);
   await PrefStore.clear();
   await SecureStorage.clear();
 
@@ -21,8 +24,8 @@ Future<void> logout(BuildContext context) async {
 
 Future<void> updateTheme(BuildContext context) async {
 
-  void change(BuildContext ctx, bool? dark) async {
-    await PrefStore.setTheme(dark);
+  void change(BuildContext ctx, AppTheme theme) async {
+    await PrefStore.setTheme(theme);
     if (ctx.mounted) Navigator.pop(ctx);
   }
 
@@ -34,17 +37,22 @@ Future<void> updateTheme(BuildContext context) async {
 
         Card(child: ListTile(
           title: Text("Light Theme"), leading: Icon(Icons.light_mode),
-          onTap: () => change(ctx, false),
+          onTap: () => change(ctx, .light),
         )),
 
         Card(child: ListTile(
           title: Text("Dark Theme"), leading: Icon(Icons.dark_mode),
-          onTap: () => change(ctx, true),
+          onTap: () => change(ctx, .dark),
+        )),
+
+        Card(child: ListTile(
+          title: Text("AMOLED Theme"), leading: Icon(Icons.dark_mode_outlined),
+          onTap: () => change(ctx, .amoled),
         )),
 
         Card(child: ListTile(
           title: Text("System Theme"), leading: Icon(Icons.brightness_medium),
-          onTap: () => change(ctx, null),
+          onTap: () => change(ctx, .system),
         ))
 
       ],
@@ -61,5 +69,5 @@ void syncData(BuildContext ctx) =>
   ));
 
 void shareApp() => SharePlus.instance.share(ShareParams(
-    text: "Check out this one-stop solution for V-TOP: V-STOP! Download here: https://github.com/V-Srivatsan/VStop/releases"
+    text: "Check out this one-stop solution for V-TOP: V-STOP!\n\nDownload here: https://github.com/V-Srivatsan/VStop/releases/latest"
 ));

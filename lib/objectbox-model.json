@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:7844094307121961881",
-      "lastPropertyId": "5:9089118697839389399",
+      "lastPropertyId": "8:168608596726870728",
       "name": "Course",
       "properties": [
         {
@@ -19,7 +19,7 @@
           "name": "code",
           "indexId": "1:369789311095140994",
           "type": 9,
-          "flags": 2080
+          "flags": 34848
         },
         {
           "id": "3:7508470092222060500",
@@ -38,13 +38,23 @@
           "type": 11,
           "flags": 520,
           "relationTarget": "CourseCategory"
+        },
+        {
+          "id": "6:9157582254565902923",
+          "name": "type",
+          "type": 9
+        },
+        {
+          "id": "8:168608596726870728",
+          "name": "grade",
+          "type": 9
         }
       ],
       "relations": []
     },
     {
       "id": "2:2720387347581765818",
-      "lastPropertyId": "3:6726769845492668866",
+      "lastPropertyId": "4:6310751137202083207",
       "name": "CourseCategory",
       "properties": [
         {
@@ -62,6 +72,11 @@
           "id": "3:6726769845492668866",
           "name": "credits",
           "type": 8
+        },
+        {
+          "id": "4:6310751137202083207",
+          "name": "code",
+          "type": 9
         }
       ],
       "relations": []
@@ -190,17 +205,53 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "6:6117339244360381770",
+      "lastPropertyId": "5:5791292606650345061",
+      "name": "CalendarEntry",
+      "properties": [
+        {
+          "id": "1:6862399241802356519",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:8947147389713750571",
+          "name": "date",
+          "indexId": "9:4691868773350384010",
+          "type": 9,
+          "flags": 2080
+        },
+        {
+          "id": "4:8945857763459413324",
+          "name": "comment",
+          "type": 9
+        },
+        {
+          "id": "5:5791292606650345061",
+          "name": "type",
+          "type": 9
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "5:8359651986574788630",
-  "lastIndexId": "7:8093373955574509094",
+  "lastEntityId": "6:6117339244360381770",
+  "lastIndexId": "9:4691868773350384010",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,
   "retiredEntityUids": [],
-  "retiredIndexUids": [],
-  "retiredPropertyUids": [],
+  "retiredIndexUids": [
+    3191994156590455572
+  ],
+  "retiredPropertyUids": [
+    3594803508846366057,
+    952155053874008187
+  ],
   "retiredRelationUids": [],
   "version": 1
 }

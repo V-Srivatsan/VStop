@@ -7,9 +7,9 @@ import 'logic.dart' as logic;
 
 class LoginForm extends StatefulWidget {
   static bool loaded = true;
-
+  final bool scrollable;
   final void Function(BuildContext) onAuth;
-  const LoginForm({super.key, required this.onAuth});
+  const LoginForm({super.key, required this.onAuth, this.scrollable = true});
 
   @override
   State<LoginForm> createState() => _LoginFormState();
@@ -57,7 +57,7 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return FormBuilder(
+    final res = FormBuilder(
       key: _key,
       child: Column(
         mainAxisSize: .min, spacing: 10,
@@ -105,5 +105,7 @@ class _LoginFormState extends State<LoginForm> {
         ],
       ),
     );
+
+    return widget.scrollable ? SingleChildScrollView(child: res) : res;
   }
 }

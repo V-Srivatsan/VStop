@@ -34,12 +34,13 @@ Future<void> fetchAttendance(String sem) async {
       for (var row in rows) {
         final date = DateFormat("yyyyMMdd")
             .format(DateFormat("dd-MMM-yyyy").parse(row.children[1].text!.trim()));
-        final present = row.children[4].text!.trim()[0] != "A";
+
+        final od = row.children[4].text!.trim()[0] == "O";
+        final present = row.children[4].text!.trim()[0] == "P";
 
         final slots = row.children[2].text!.trim().split("+").length;
-
-        if (present)
-          for (int i=0; i < slots; i++) entries[classId]!.present.add(date);
+        if (present || od)
+          for (int i=0; i < slots; i++) entries[classId]!.present.add('$date${od ? '.' : ""}');
         else
           for (int i=0; i < slots; i++) entries[classId]!.absent.add(date);
       }

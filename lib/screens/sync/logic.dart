@@ -1,9 +1,11 @@
 import 'package:vstop/lib/data/index.dart';
 import 'package:vstop/lib/data/profile.dart';
+import 'package:vstop/lib/data/course.dart';
 import 'package:vstop/lib/data/sem.dart';
 import 'package:vstop/lib/data/timetable.dart';
 import 'package:vstop/lib/data/attendance.dart';
 import 'package:vstop/lib/data/marks.dart';
+import 'package:vstop/lib/data/calendar.dart';
 
 import 'package:vstop/lib/store.dart';
 
@@ -14,7 +16,11 @@ Future<bool> syncData(int Function(int, String) update) async {
   p = update(15, "Figuring out who you are...");
   await fetchProfile();
 
-  p = update(30, "Checking what you went through...");
+  p = update(30, "Downloading your journey...");
+  await CourseStore.fetch();
+  await CourseStore.fetchGradeHistory();
+
+  p = update(40, "Checking what you went through...");
   await SemStore.fetch();
   final sems = SemStore.getSems();
   await PrefStore.setSem(sems.first.code);
@@ -38,6 +44,9 @@ Future<bool> syncData(int Function(int, String) update) async {
     p = update(p+sem_update, "Gathering undisclosed marks...");
     await MarkStore(sem.code).fetch();
   }
+
+  p = update(90, "Plotting your future...");
+  await AcademicCalendar.fetch();
 
   update(95, "Syncing academic trauma...");
   await MarkStore.syncToFirestore();

@@ -41,7 +41,7 @@ class _ScreenState extends State<Screen> {
         profile.Screen()
       ][idx],
       bottomNavigationBar: BottomNavigationBar(
-        onTap: (i) => setState(() { idx = i; actions = []; }), currentIndex: idx,
+        onTap: (i) => idx == i ? null : setState(() { idx = i; actions = []; }), currentIndex: idx,
         items: MENU.indexed.map((item) => BottomNavigationBarItem(
           icon: Icon(idx == item.$1 ? item.$2.$3 : item.$2.$2),
           label: item.$2.$1
