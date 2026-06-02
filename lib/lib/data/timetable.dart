@@ -6,6 +6,7 @@ import 'package:vstop/objectbox.g.dart';
 import 'index.dart';
 import 'course.dart';
 import 'sem.dart';
+import 'marks.dart';
 
 @Entity()
 class TimetableEntry {
@@ -17,6 +18,9 @@ class TimetableEntry {
 
   List<String> present, absent;
   String? grade;
+
+  @Backlink('entry')
+  final marks = ToMany<Mark>();
 
   TimetableEntry({
     this.id = 0, required this.classId, required this.venue, this.grade,
@@ -76,5 +80,15 @@ class Timetable {
     final res = query.find();
     query.close();
     return res;
+  }
+
+  Map<Course, List<TimetableEntry>> getCourseMap() {
+    final entries = getCourses();
+    final courseMap = <Course, List<TimetableEntry>>{};
+    for (var entry in entries) {
+      final course = entry.course.target!;
+      courseMap.putIfAbsent(course, () => []).add(entry);
+    }
+    return courseMap;
   }
 }

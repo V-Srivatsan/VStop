@@ -17,6 +17,7 @@ Future<bool> syncData(int Function(int, String) update) async {
 
   p = update(30, "Downloading your journey...");
   await CourseStore.fetch();
+  await CourseStore.fetchGradeHistory();
 
   p = update(40, "Checking what you went through...");
   await SemStore.fetch();

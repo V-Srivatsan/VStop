@@ -17,7 +17,7 @@ class Course {
   int id;
   @Unique(onConflict: .replace) String code;
   String name; double credits;
-  String type;
+  String type; String? grade;
   var category = ToOne<CourseCategory>();
 
   @Backlink('course')
@@ -27,10 +27,13 @@ class Course {
 
   bool isRelativeGraded() => code.endsWith("L");
 
-  bool get completed => entries.any((e) => (
-    e.grade != null && !e.grade!.startsWith('*') &&
-    e.grade != 'F' && e.grade != 'N'
-  ));
+  bool get completed => (
+    grade != null && !grade!.startsWith('*') &&
+    grade != 'F' && grade != 'N'
+  );
+
+  @override bool operator ==(Object other) => (other is Course && code == other.code);
+  @override int get hashCode => code.hashCode;
 }
 
 class CourseStore {
@@ -85,9 +88,53 @@ class CourseStore {
 
     await Future.wait(requests);
   }
+  static Future<void> fetchGradeHistory() async {
+    Map<String, Course> courseMap = .fromEntries(_box.getAll().map((c) => MapEntry(c.code, c)));
+    final gradeHistoryDoc = parseHtmlDocument(await WebView.request(
+        "https://vtopcc.vit.ac.in/vtop/examinations/examGradeView/StudentGradeHistory",
+        { "verifyMenu": "true" }
+    ));
+
+    final rows = (gradeHistoryDoc.querySelectorAll('table.customTable')[1])
+      .querySelectorAll('tr.tableContent');
+
+    for (var row in rows) {
+      if (row.id.isNotEmpty) continue;
+      final code = row.children[1].text!.trim();
+      final grade = row.children[5].text!.trim();
+      courseMap[code]!.grade = grade;
+    }
+    _box.putMany(courseMap.values.toList());
+  }
 
   static List<CourseCategory> getCategories() => _catBox.getAll();
   static List<Course> getCoursesByCategory(int cat) => _box.query(Course_.category.equals(cat)).build().find();
 
   static void clear() { _box.removeAll(); _catBox.removeAll(); }
+
+  static double getCGPA() {
+    final courses = _box.getAll();
+    double totalPoints = 0, totalCredits = 0;
+    for (var course in courses) {
+      final gp = getGradePoint(course.grade);
+      if (gp != null) {
+        totalPoints += gp * course.credits;
+        totalCredits += course.credits;
+      }
+    }
+    return totalCredits == 0 ? 0 : totalPoints / totalCredits;
+  }
+}
+
+double? getGradePoint(String? grade) {
+  if (grade == null || grade == "P" || grade == "N") return null;
+  switch (grade) {
+    case 'S': return 10.0;
+    case 'A': return 9.0;
+    case 'B': return 8.0;
+    case 'C': return 7.0;
+    case 'D': return 6.0;
+    case 'E': return 5.0;
+    default: return 0.0;
+  }
 }

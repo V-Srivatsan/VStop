@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:universal_html/parsing.dart' show parseHtmlDocument;
 import 'package:universal_html/universal_html.dart';
+import 'package:vstop/lib/data/course.dart';
 import 'package:vstop/lib/webview.dart';
 import 'package:vstop/lib/store.dart' show SecureStorage;
 
@@ -28,9 +29,9 @@ class MarkStore {
 
   Future<void> fetch() async {
     final entryBox = Database.getBox<TimetableEntry>();
-    final existing = getMarks().values;
-    if (existing.isNotEmpty)
-      _box.removeMany(existing.reduce((p, e) => p+e).map((m) => m.id).toList());
+
+    final existing = (_box.query()..link(Mark_.entry, TimetableEntry_.semester.equals(sem.id))).build().find();
+    if (existing.isNotEmpty) _box.removeMany(existing.map((e) => e.id).toList());
 
     final marks_req = () async {
       final res = await WebView.request(
@@ -92,21 +93,7 @@ class MarkStore {
       entryBox.putMany(entries);
     }();
 
-    await Future.wait([marks_req, grades_req]);
-  }
-
-  Map<String, List<Mark>> getMarks() {
-    final query = _box.query(); query.link(Mark_.entry, TimetableEntry_.semester.equals(sem.id));
-    final marks = query.order(Mark_.title).build().find();
-
-    Map<String, List<Mark>> res = {};
-    for (var mark in marks) {
-      final classId = mark.entry.target!.classId;
-      if (res[classId] == null) res[classId] = [mark];
-      else res[classId]!.add(mark);
-    }
-
-    return res;
+    await Future.wait([marks_req, grades_req, CourseStore.fetchGradeHistory()]);
   }
 
   static Future<void> syncToFirestore([List<Mark>? data]) async {
