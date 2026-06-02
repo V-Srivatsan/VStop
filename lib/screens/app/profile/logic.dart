@@ -7,8 +7,11 @@ import 'package:vstop/screens/login/index.dart' as auth;
 import 'package:vstop/screens/sync/index.dart' as sync;
 import 'package:vstop/screens/login/form.dart';
 
+Future<bool> getEstimateGrades() async => await PrefStore.getPredictiveGrades();
+Future<void> setEstimateGrades(bool val) async => await PrefStore.setPredictiveGrades(val);
+
 Future<void> logout(BuildContext context) async {
-  Database.clear();
+  Database.clear(); await PrefStore.setTheme(.system);
   await PrefStore.clear();
   await SecureStorage.clear();
 

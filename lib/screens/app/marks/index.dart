@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:vstop/lib/data/marks.dart';
+import 'package:vstop/lib/data/course.dart' show Course;
+import 'package:vstop/lib/data/timetable.dart';
 import 'package:vstop/lib/store.dart';
+import 'package:vstop/widgets/display_card.dart';
 
-import 'mark_tile.dart';
 import 'logic.dart' as logic;
 
 class Screen extends StatefulWidget {
@@ -15,24 +16,25 @@ class Screen extends StatefulWidget {
 
 class _ScreenState extends State<Screen> {
 
-  Map<String, List<Mark>> marks = {};
-  bool syncing = false;
+  List<MapEntry<Course, List<TimetableEntry>>> entries = [];
+  bool syncing = false, predict = false; String sem = "";
 
   @override
   void initState() {
     super.initState();
     PrefStore.getSem().then((sem) {
-      final store = MarkStore(sem);
-      setState(() => marks = store.getMarks());
+      this.sem = sem;
+      setState(() => entries = Timetable(sem).getCourseMap().entries.toList());
     });
+    PrefStore.getPredictiveGrades().then((val) => predict = val);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (context.mounted)
         widget.updateActions([
           IconButton(
               onPressed: () => logic.syncMarks(
-                context,
-                (sync, m) => setState(() { syncing = sync; marks = m; })
+                context, sem,
+                (sync, m) => setState(() { syncing = sync; entries = m.entries.toList(); })
               ),
               icon: Icon(Icons.cloud_sync)
           )
@@ -50,38 +52,47 @@ class _ScreenState extends State<Screen> {
           CircularProgressIndicator(),
           Text("Syncing...")
         ],
-      )) : ListView(
-        children: marks.values.map((group) {
-          final entry = group.first.entry.target!;
-          double total = 0, maxTotal = 0;
-          List<Widget> children = [];
+      )) : CustomScrollView(slivers: [
 
-          for (var mark in group) {
-            total += mark.score; maxTotal += mark.maxScore;
-            children.add(MarkTile(name: mark.title, score: mark.score, maxScore: mark.maxScore));
-          }
+        SliverToBoxAdapter(child: Column(
+          mainAxisSize: .min, spacing: 10,
+          children: [
 
-          return MarkTile(
-            name: entry.course.target!.name,
-            score: total, maxScore: maxTotal, grade: entry.grade,
+            Row(
+              mainAxisAlignment: .spaceBetween, spacing: 10,
+              children: [
 
-            onTap: () => showModalBottomSheet(
-              context: context,
-              builder: (_) => Container(
-                padding: .symmetric(horizontal: 20, vertical: 10),
-                child: SingleChildScrollView(child: Column(
-                  mainAxisSize: .min, crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 10,
-                  children: [
-                    Text(entry.course.target!.name, style: Theme.of(context).textTheme.titleLarge),
-                    ListView(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), children: children)
-                  ],
-                )),
-              )
+                DisplayCard(
+                  label: "GPA", color: Theme.of(context).colorScheme.primary,
+                  child: Text(
+                    logic.getGPA(entries).toStringAsFixed(2),
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  )
+                ),
+
+                DisplayCard(
+                  label: "CGPA", color: Theme.of(context).colorScheme.secondary,
+                  child: Text(
+                    logic.getCGPA().toStringAsFixed(2),
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                )
+
+              ],
             ),
-          );
-        }).toList(),
-      )
+
+            SizedBox(height: 10)
+
+          ],
+        )),
+
+        SliverList.builder(
+          itemCount: entries.length,
+          itemBuilder: (context, index) =>
+            logic.getMarkTile(context, entries[index].key, entries[index].value, predict)
+        )
+
+      ])
     );
   }
 }

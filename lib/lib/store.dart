@@ -39,7 +39,6 @@ class PrefStore {
   }
   static Future<void> setAttThreshold(int val) async => await _store.setInt("attThreshold", val);
 
-
   static ValueNotifier<AppTheme> theme = ValueNotifier<AppTheme>(.system);
   static Future<void> setTheme(AppTheme theme) async {
     switch (theme) {
@@ -67,6 +66,12 @@ class PrefStore {
     else theme.value = dark ? (amoled ? .amoled : .dark) : .light;
   }
 
+  static Future<bool> getPredictiveGrades() async {
+    final res = await _store.getBool("predictiveGrades");
+    if (res == null) setPredictiveGrades(true);
+    return res ?? true;
+  }
+  static Future<void> setPredictiveGrades(bool val) async => await _store.setBool("predictiveGrades", val);
 
   static Future<void> clear() async => await _store.clear();
 }
