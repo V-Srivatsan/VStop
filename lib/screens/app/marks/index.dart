@@ -18,7 +18,7 @@ class Screen extends StatefulWidget {
 class _ScreenState extends State<Screen> {
 
   List<MapEntry<Course, List<TimetableEntry>>> entries = [];
-  bool syncing = false, predict = false; String sem = "";
+  bool syncing = false, predict = false, aceGrading = false; String sem = "";
 
   @override
   void initState() {
@@ -28,6 +28,7 @@ class _ScreenState extends State<Screen> {
       setState(() => entries = MarkStore(sem).getCourseMap().entries.toList());
     });
     PrefStore.getPredictiveGrades().then((val) => predict = val);
+    PrefStore.getACEGrading().then((val) => aceGrading = val);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (context.mounted)
@@ -90,7 +91,10 @@ class _ScreenState extends State<Screen> {
         SliverList.builder(
           itemCount: entries.length,
           itemBuilder: (context, index) =>
-            logic.getMarkTile(context, entries[index].key, entries[index].value, predict)
+            logic.getMarkTile(context,
+                course: entries[index].key, entries: entries[index].value,
+                predict: predict, aceGrading: aceGrading
+            )
         )
 
       ])
