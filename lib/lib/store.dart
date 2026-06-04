@@ -73,5 +73,8 @@ class PrefStore {
   }
   static Future<void> setPredictiveGrades(bool val) async => await _store.setBool("predictiveGrades", val);
 
+  static Future<bool> getACEGrading() async => (await _store.getBool("aceGrading")) ?? false;
+  static Future<void> setACEGrading(bool val) async => await _store.setBool("aceGrading", val);
+
   static Future<void> clear() async => await _store.clear();
 }

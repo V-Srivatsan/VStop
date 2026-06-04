@@ -17,11 +17,10 @@ void syncMarks(
       if (context.mounted) Navigator.pop(context);
       setState(true, {});
 
-      await MarkStore(sem).fetch();
+      final store = MarkStore(sem); await store.fetch();
+      await MarkStore.syncToFirestore(store.getCourseMap());
 
-      await MarkStore.syncToFirestore(Timetable(sem).getCourses().fold([], (p, e) => p! + e.marks));
-
-      setState(false, MarkStore(sem).getCourseMap());
+      setState(false, store.getCourseMap());
     }),
   ));
 }
