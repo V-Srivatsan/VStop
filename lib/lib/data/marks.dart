@@ -3,7 +3,7 @@ import 'package:universal_html/parsing.dart' show parseHtmlDocument;
 import 'package:universal_html/universal_html.dart';
 import 'package:vstop/lib/data/course.dart';
 import 'package:vstop/lib/webview.dart';
-import 'package:vstop/lib/store.dart' show SecureStorage;
+import 'package:vstop/lib/store.dart';
 
 import 'package:objectbox/objectbox.dart';
 import 'package:vstop/objectbox.g.dart';
@@ -26,6 +26,16 @@ class MarkStore {
 
   final Semester sem;
   MarkStore(String code) : sem = SemStore.getSem(code)!;
+
+  Map<Course, List<TimetableEntry>> getCourseMap() {
+    final map = Timetable(sem.code).getCourseMap(), res = <Course, List<TimetableEntry>>{};
+    for (var entry in map.entries) {
+      final lst = entry.value.where((e) => e.marks.isNotEmpty || e.grade != null).toList();
+      if (lst.isNotEmpty) res[entry.key] = lst;
+    }
+
+    return res;
+  }
 
   Future<void> fetch() async {
     final entryBox = Database.getBox<TimetableEntry>();
@@ -96,48 +106,25 @@ class MarkStore {
     await Future.wait([marks_req, grades_req, CourseStore.fetchGradeHistory()]);
   }
 
-  static Future<void> syncToFirestore([List<Mark>? data]) async {
-    final firestore = Firestore("marks");
+  static Future<void> syncToFirestore([Map<Course, List<TimetableEntry>>? data]) async {
     final auth = (await SecureStorage.get("auth"))!;
+    final aceGrading = await PrefStore.getACEGrading();
 
-    data ??= _box.getAll();
+    List<Future<void>> tasks = [];
 
-    final Map<String, (double, double)> marks = {};
-    final Map<String, TimetableEntry> tt_entries = {};
+    if (data == null)
+      for (var sem in SemStore.getSems())
+        tasks.add(syncToFirestore(MarkStore(sem.code).getCourseMap()));
+    else
+      for (var course in data.keys)
+        if (course.grade == null)
+          tasks.add(() async {
+            final grade = await getGrade(course: course, entries: data[course]!, user: auth, aceGrading: aceGrading);
+            data[course] = data[course]!.map((e) { e.grade = '*$grade'; return e; }).toList();
+          }());
 
-    for (Mark mark in data) {
-      if (mark.entry.target!.grade != null) continue;
-      final classId = mark.entry.target!.classId;
-      final curr = marks.putIfAbsent(classId, () => (0.0, 0.0));
-      marks[classId] = (curr.$1 + mark.score, curr.$2 + mark.maxScore);
-
-      tt_entries[classId] = mark.entry.target!;
-    }
-
-    List<TimetableEntry> modified = [];
-    for (String classId in marks.keys) {
-
-      final entry = tt_entries[classId]!;
-      final course = entry.course.target!;
-
-      Map<String, dynamic>? markData;
-      if (course.isRelativeGraded()) {
-        final snapshot = await firestore.getDoc(classId);
-
-        markData = {};
-        if (snapshot.exists) { markData = snapshot.data() as Map<String, dynamic>; }
-        markData[auth] = marks[classId]!.$1;
-
-        await firestore.setDoc(snapshot, { auth: marks[classId]!.$1 });
-      }
-
-      entry.grade = '*' + getGrade(
-        courseCode: course.code, entries: markData,
-        score: marks[classId]!.$1, maxScore: marks[classId]!.$2
-      ); modified.add(entry);
-    }
-
-    (Database.getBox<TimetableEntry>()).putMany(modified);
+    await Future.wait(tasks);
+    if (data != null) (Database.getBox<TimetableEntry>()).putMany(data.values.fold([], (p, e) => p + e));
   }
 
   static void clear() => _box.removeAll();
@@ -145,33 +132,36 @@ class MarkStore {
 
 
 
-String getGrade({
-  required String courseCode, required double score, required double maxScore,
-  Map<String, dynamic>? entries
-}) {
-  final percent = score / maxScore;
+Future<String> getGrade({
+  required Course course, required List<TimetableEntry> entries,
+  required String user, required bool aceGrading
+}) async {
+  final grading = course.getGrading(aceGrading);
+  final score = course.getScore(entries, aceGrading);
 
-  if (courseCode.endsWith("L")) {
-    final data = entries!.values.toList();
+  final double percent = score.$2 == 0 ? .nan : score.$1 / score.$2;
+  if (percent == .nan) return "";
 
-    double avg = 0;
-    for (double i in data) avg += i;
-    avg /= data.length;
+  if (grading == .relative) {
+    final entry = entries.firstWhere((e) => !e.isLab);
 
-    double d2 = 0;
-    for (double i in data) d2 += (i-avg)*(i-avg);
-    double std = sqrt(d2/data.length);
+    final snapshot = await entry.getCloudData();
+    final marks = (snapshot.exists ? snapshot.data() as Map<String, dynamic> : <String, double>{});
+    marks[user] = score.$1; entry.setCloudData(snapshot, { user: score.$1 });
 
-    if (score >= (avg + 1.5*std) && percent >= 0.8) return "S";
-    if (score >= (avg + 0.5*std)) return "A";
-    if (score >= (avg - 0.5*std)) return "B";
-    if (score >= (avg - 1.0*std)) return "C";
-    if (score >= (avg - 1.5*std)) return "D";
-    if (score >= (avg - 2.0*std)) return "E";
+    double avg = marks.values.fold(0.0, (p, m) => p+m) / marks.length;
+    double std = sqrt(marks.values.fold(0.0, (p, m) => p + pow(m-avg, 2)) / marks.length);
+
+    if (score.$1 >= (avg + 1.5*std) && percent >= 0.8) return "S";
+    if (score.$1 >= (avg + 0.5*std)) return "A";
+    if (score.$1 >= (avg - 0.5*std)) return "B";
+    if (score.$1 >= (avg - 1.0*std)) return "C";
+    if (score.$1 >= (avg - 1.5*std)) return "D";
+    if (score.$1 >= (avg - 2.0*std)) return "E";
     return "F";
   }
 
-  if (courseCode.endsWith("P") || courseCode.endsWith("E")) {
+  if (grading == .absolute) {
     if (percent >= 0.9) return "S";
     if (percent >= 0.8) return "A";
     if (percent >= 0.7) return "B";

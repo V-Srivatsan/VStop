@@ -1,5 +1,7 @@
 import 'package:universal_html/parsing.dart' show parseHtmlDocument;
 import 'package:vstop/lib/webview.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'firestore.dart';
 
 import 'package:objectbox/objectbox.dart';
 import 'package:vstop/objectbox.g.dart';
@@ -34,6 +36,10 @@ class TimetableEntry {
   }
   int get od_used => present.where((e) => e.endsWith('.')).length;
   bool get isLab => slots.any((s) => s.contains('L'));
+
+  Future<DocumentSnapshot> getCloudData() async => await Firestore('marks').getDoc(classId);
+  Future<void> setCloudData(DocumentSnapshot snapshot, Map<String, dynamic> data) async =>
+      await Firestore('marks').setDoc(snapshot, data);
 }
 
 

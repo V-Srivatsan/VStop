@@ -29,7 +29,7 @@ class MarkTile extends StatelessWidget {
             child: Column(
               mainAxisSize: .min, crossAxisAlignment: .center, mainAxisAlignment: .center,
               children: [
-                Text(score.round().toString()),
+                Text(score.ceil().toString()),
                 Divider(color: isDark ? Colors.white54 : Colors.black12),
                 Text(maxScore.round().toString())
               ],

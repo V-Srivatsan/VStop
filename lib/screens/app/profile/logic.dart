@@ -10,6 +10,9 @@ import 'package:vstop/screens/login/form.dart';
 Future<bool> getEstimateGrades() async => await PrefStore.getPredictiveGrades();
 Future<void> setEstimateGrades(bool val) async => await PrefStore.setPredictiveGrades(val);
 
+Future<bool> getACEGrading() async => await PrefStore.getACEGrading();
+Future<void> setACEGrading(bool val) async => await PrefStore.setACEGrading(val);
+
 Future<void> logout(BuildContext context) async {
   Database.clear(); await PrefStore.setTheme(.system);
   await PrefStore.clear();

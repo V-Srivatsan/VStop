@@ -9,7 +9,7 @@ import 'package:vstop/lib/fcm.dart';
 import 'package:vstop/screens/login/index.dart' as auth;
 import 'package:vstop/screens/app/index.dart' as app;
 
-const FORCE_SYNC = true;
+const FORCE_SYNC = false;
 
 class Screen extends StatelessWidget {
   const Screen({super.key});
@@ -30,7 +30,7 @@ class Screen extends StatelessWidget {
                   title: Text("Update Available"),
                   content: Text("A new version of V-Stop is available for download!\n\nPlease update to the latest version for the best experience."),
                   actions: [
-                    OutlinedButton(onPressed: () => Navigator.pop(ctx), child: Text("Continue")),
+                    OutlinedButton(onPressed: () => Navigator.pop(ctx), child: Text("Later")),
                     FilledButton(
                         onPressed: () => launchUrl(Uri.parse("https://github.com/V-Srivatsan/VStop/releases/latest")),
                         child: Text("Download")

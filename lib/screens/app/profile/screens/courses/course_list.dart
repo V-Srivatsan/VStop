@@ -112,7 +112,8 @@ class _SearchableListState extends State<SearchableList> {
         itemBuilder: (_, i) => Card(
           color: filtered[i].completed ? Theme.of(context).colorScheme.tertiary.withAlpha(128) : null,
           child: ListTile(
-            title: Text(filtered[i].name), subtitle: Text(filtered[i].code),
+            title: Text(filtered[i].name),
+            subtitle: Text(filtered[i].completed ? 'Grade: ${filtered[i].grade!}' : filtered[i].code),
             trailing: Text(filtered[i].credits.toStringAsFixed(1)),
             leading: (
                 filtered[i].type == "TH" ? Icon(Icons.book_outlined) :
