@@ -36,6 +36,7 @@ Widget getMarkTile(
   List<Widget> children = [];
 
   for (var e in entries) {
+    if (e.marks.isEmpty) continue;
     children.add(Column(
       mainAxisSize: .min,
       children: [
