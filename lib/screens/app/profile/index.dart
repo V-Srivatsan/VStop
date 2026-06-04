@@ -36,6 +36,18 @@ class Screen extends StatelessWidget {
               ListTile(
                 title: Text("Estimate Grades"), leading: Icon(Icons.calculate_outlined),
                 trailing: PrefSwitch(getValue: logic.getEstimateGrades, onChanged: logic.setEstimateGrades),
+              ),
+              Divider(),
+              ListTile(
+                title: Text("ACE Grading System"), leading: Icon(Icons.grade),
+                trailing: PrefSwitch(getValue: logic.getACEGrading, onChanged: (val) async {
+                  await logic.setACEGrading(val);
+                  if (context.mounted) showDialog(context: context, builder: (_) => AlertDialog(
+                    title: Text("Grading System Changed"),
+                    content: Text("Your estimated grades need to be recalculated. Sync your marks in the marks section to update the estimates according to the new system"),
+                    actions: [ FilledButton(onPressed: () => Navigator.pop(context), child: Text("Understood")) ],
+                  ));
+                }),
               )
             ]),
 
