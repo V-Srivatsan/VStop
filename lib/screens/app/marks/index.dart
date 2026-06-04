@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vstop/lib/data/course.dart' show Course;
 import 'package:vstop/lib/data/timetable.dart';
+import 'package:vstop/lib/data/marks.dart';
 import 'package:vstop/lib/store.dart';
 import 'package:vstop/widgets/display_card.dart';
 
@@ -24,7 +25,7 @@ class _ScreenState extends State<Screen> {
     super.initState();
     PrefStore.getSem().then((sem) {
       this.sem = sem;
-      setState(() => entries = Timetable(sem).getCourseMap().entries.toList());
+      setState(() => entries = MarkStore(sem).getCourseMap().entries.toList());
     });
     PrefStore.getPredictiveGrades().then((val) => predict = val);
 

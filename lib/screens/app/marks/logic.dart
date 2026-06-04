@@ -19,10 +19,9 @@ void syncMarks(
 
       await MarkStore(sem).fetch();
 
-      final timetable = Timetable(sem);
-      await MarkStore.syncToFirestore(timetable.getCourses().fold([], (p, e) => p! + e.marks));
+      await MarkStore.syncToFirestore(Timetable(sem).getCourses().fold([], (p, e) => p! + e.marks));
 
-      setState(false, timetable.getCourseMap());
+      setState(false, MarkStore(sem).getCourseMap());
     }),
   ));
 }

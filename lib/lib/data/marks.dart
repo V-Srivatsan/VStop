@@ -27,6 +27,16 @@ class MarkStore {
   final Semester sem;
   MarkStore(String code) : sem = SemStore.getSem(code)!;
 
+  Map<Course, List<TimetableEntry>> getCourseMap() {
+    final map = Timetable(sem.code).getCourseMap(), res = <Course, List<TimetableEntry>>{};
+    for (var entry in map.entries) {
+      final lst = entry.value.where((e) => e.marks.isNotEmpty || e.grade != null).toList();
+      if (lst.isNotEmpty) res[entry.key] = lst;
+    }
+
+    return res;
+  }
+
   Future<void> fetch() async {
     final entryBox = Database.getBox<TimetableEntry>();
 
@@ -106,7 +116,8 @@ class MarkStore {
     final Map<String, TimetableEntry> tt_entries = {};
 
     for (Mark mark in data) {
-      if (mark.entry.target!.grade != null) continue;
+      final entryGrade = mark.entry.target!.grade;
+      if (entryGrade != null && !entryGrade.startsWith('*')) continue;
       final classId = mark.entry.target!.classId;
       final curr = marks.putIfAbsent(classId, () => (0.0, 0.0));
       marks[classId] = (curr.$1 + mark.score, curr.$2 + mark.maxScore);
