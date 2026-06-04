@@ -89,7 +89,9 @@ class CourseStore {
     await Future.wait(requests);
   }
   static Future<void> fetchGradeHistory() async {
-    Map<String, Course> courseMap = .fromEntries(_box.getAll().map((c) => MapEntry(c.code, c)));
+    Map<String, Course> courseMap = .fromEntries(_box.getAll().map(
+      (c) { c.grade = null; return MapEntry(c.code, c); }
+    ));
     final gradeHistoryDoc = parseHtmlDocument(await WebView.request(
         "https://vtopcc.vit.ac.in/vtop/examinations/examGradeView/StudentGradeHistory",
         { "verifyMenu": "true" }
