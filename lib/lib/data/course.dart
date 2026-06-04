@@ -39,7 +39,10 @@ class Course {
     double theoryFactor = 1;
 
     for (var entry in entries)
-      if (!entry.isLab) { theoryFactor = (entry.slots.length + 1) / credits; break;}
+      if (!entry.isLab && entry.slots.isNotEmpty) {
+        theoryFactor = (entry.slots.length + (entry.slots.first.length == 2 ? 1 : 0)) / credits;
+        break;
+      }
 
     for (var entry in entries) {
       final marks = entry.marks;

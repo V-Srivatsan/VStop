@@ -60,12 +60,34 @@ class Timetable {
     final rows = doc.querySelectorAll("table:not(#timeTableStyle) tr:not(:first-child):not(:last-child)");
 
     List<TimetableEntry> entries = [];
+    final courseBox = Database.getBox<Course>();
+    Map<String, Course> courseCache = {};
 
     for (var row in rows) {
       final children = row.children;
       if (children.length != 12) continue;
 
-      final course = CourseStore.getCourse(children[2].text!.trim().split(" - ").first.trim())!;
+      Course? course = CourseStore.getCourse(children[2].text!.trim().split(" - ").first.trim());
+      if (course == null) {
+        final info = children[2].text!.trim().split(" - ");
+        final code = info.first.trim(), name = info.last.split("(").first.trim();
+        final double credits = .parse(children[3].innerText.split(" ").last.trim());
+
+        if (courseCache[code] != null) courseCache[code]!.credits += credits;
+        else {
+          String type = info.last.split("(").last.trim();
+          type = (
+              info[0] == 'P' ? 'PJT' :
+              info[0] == 'E' ? 'ETL' :
+              info[0] == 'O' ? 'OC' :
+              info[0] == 'L' ? 'LO' : 'TH'
+          );
+
+          courseCache[code] = Course(code: code, name: name, type: type, credits: credits);
+          courseBox.put(courseCache[code]!);
+          course = courseCache[code]!;
+        }
+      }
       final loc = children[7].text!.trim().split("-");
       final slots = loc.length == 3 ? loc.first.trim().split("+") : null;
       final venue = loc.length == 3 ? '${loc[1].trim()}-${loc[2].trim()}' : null;
