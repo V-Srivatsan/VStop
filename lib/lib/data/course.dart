@@ -12,6 +12,8 @@ class CourseCategory {
   CourseCategory({this.id = 0, required this.code, required this.name, this.credits = 0 });
 }
 
+enum GradingType { relative, absolute, ungraded }
+
 @Entity()
 class Course {
   int id;
@@ -25,7 +27,37 @@ class Course {
 
   Course({this.id = 0, required this.code, required this.name, required this.type, required this.credits });
 
-  bool isRelativeGraded() => code.endsWith("L");
+  GradingType getGrading(bool ace) => (
+    type == "TH" ? .relative :
+    type == "LO" || type == "PJT" ? .absolute :
+    type == "OC" ? (ace ? .absolute : .ungraded) :
+    (ace ? .relative : .absolute)
+  );
+
+  (double, double) getScore(List<TimetableEntry> entries, bool ace) {
+    double total = 0, maxTotal = 0;
+    double theoryFactor = 1;
+
+    for (var entry in entries)
+      if (!entry.isLab) { theoryFactor = (entry.slots.length + 1) / credits; break;}
+
+    for (var entry in entries) {
+      final marks = entry.marks;
+      if (marks.isEmpty) continue;
+
+      double entryTotal = 0, entryMaxTotal = 0;
+      for (var mark in entry.marks) { entryTotal += mark.score; entryMaxTotal += mark.maxScore; }
+
+      double factor = 1;
+      if (ace && getGrading(ace) == .relative)
+        factor = (entry.isLab ? (1 - theoryFactor) : theoryFactor);
+
+      total += entryTotal * factor;
+      maxTotal += entryMaxTotal * factor;
+    }
+
+    return (total, maxTotal);
+  }
 
   bool get completed => (
     grade != null && !grade!.startsWith('*') &&
