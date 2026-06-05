@@ -4,6 +4,8 @@ import 'package:vstop/lib/store.dart';
 import 'package:vstop/lib/data/sem.dart';
 import 'package:vstop/lib/data/timetable.dart';
 
+import 'package:vstop/screens/app/profile/screens/calendar/index.dart' as calendar;
+
 import 'overview.dart';
 import 'timetable/logic.dart' as tt_logic;
 import 'timetable/index.dart' as all_schedule;
@@ -56,13 +58,21 @@ class _ScreenState extends State<Screen> {
             children: [
 
               Column(
-                mainAxisSize: .min, crossAxisAlignment: .stretch,
+                mainAxisSize: .min, crossAxisAlignment: .start,
                 children: [
                   Text(
                     "Hey, ${user ?? ''}",
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
-                  Text(DateFormat("dd MMM, EEEE").format(DateTime.now())),
+
+                  TextButton(
+                    style: ButtonStyle(padding: .all(.zero)),
+                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => calendar.Screen())),
+                    child: Text(
+                      DateFormat("dd MMM, EEEE").format(DateTime.now()),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
                 ],
               ),
 
