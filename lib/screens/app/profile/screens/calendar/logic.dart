@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vstop/lib/data/calendar.dart';
+import 'package:vstop/lib/store.dart';
 import 'package:vstop/screens/login/form.dart';
 
 import 'index.dart' as calendar;
@@ -8,11 +9,13 @@ void syncCalendar(BuildContext ctx) {
   showDialog(context: ctx, builder: (_) => AlertDialog(
     title: Text("Sync Calendar"),
     content: LoginForm(onAuth: (context) async {
-      await AcademicCalendar.fetch();
+      final sem = await PrefStore.getSem();
+      await Future.wait([AcademicCalendar.fetch(sem), AcademicCalendar.fetchExamSchedule(sem)]);
       if (context.mounted) Navigator.pop(context);
-      if (ctx.mounted) Navigator.push(ctx, MaterialPageRoute(builder: (_) => calendar.Screen()));
+      if (ctx.mounted) Navigator.pushReplacement(ctx, MaterialPageRoute(builder: (_) => calendar.Screen()));
     }),
   ));
 }
 
-List<CalendarEntry> getEntries() => AcademicCalendar.get();
+List<CalendarEntry> getEntries() => AcademicCalendar.getEntries();
+List<ExamEntry> getExams() => AcademicCalendar.getSchedule();

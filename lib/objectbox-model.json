@@ -207,50 +207,121 @@
       "relations": []
     },
     {
-      "id": "6:6117339244360381770",
-      "lastPropertyId": "5:5791292606650345061",
+      "id": "7:1673803474490642497",
+      "lastPropertyId": "5:8317470736566838004",
       "name": "CalendarEntry",
       "properties": [
         {
-          "id": "1:6862399241802356519",
+          "id": "1:4068744691954281372",
           "name": "id",
           "type": 6,
           "flags": 1
         },
         {
-          "id": "2:8947147389713750571",
+          "id": "2:8805042841232445915",
+          "name": "semId",
+          "indexId": "10:4004628696953133679",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Semester"
+        },
+        {
+          "id": "3:2504582909949691960",
           "name": "date",
-          "indexId": "9:4691868773350384010",
+          "indexId": "11:7314885133191349860",
           "type": 9,
           "flags": 2080
         },
         {
-          "id": "4:8945857763459413324",
-          "name": "comment",
+          "id": "4:5926418054102171515",
+          "name": "type",
           "type": 9
         },
         {
-          "id": "5:5791292606650345061",
-          "name": "type",
+          "id": "5:8317470736566838004",
+          "name": "comment",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "8:7941267040545297008",
+      "lastPropertyId": "9:4709982309744642399",
+      "name": "ExamEntry",
+      "properties": [
+        {
+          "id": "1:4252261356883584139",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:837588652089442888",
+          "name": "semId",
+          "indexId": "12:3645173848378168003",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Semester"
+        },
+        {
+          "id": "3:3706808724320620997",
+          "name": "course",
+          "type": 9
+        },
+        {
+          "id": "4:3614608383412371584",
+          "name": "date",
+          "type": 9
+        },
+        {
+          "id": "5:5442851090369535563",
+          "name": "from",
+          "type": 9
+        },
+        {
+          "id": "6:4183329675131114278",
+          "name": "to",
+          "type": 9
+        },
+        {
+          "id": "7:6098588498759848749",
+          "name": "venue",
+          "type": 9
+        },
+        {
+          "id": "8:7614085969900068546",
+          "name": "seatLoc",
+          "type": 9
+        },
+        {
+          "id": "9:4709982309744642399",
+          "name": "seatNo",
           "type": 9
         }
       ],
       "relations": []
     }
   ],
-  "lastEntityId": "6:6117339244360381770",
-  "lastIndexId": "9:4691868773350384010",
+  "lastEntityId": "8:7941267040545297008",
+  "lastIndexId": "12:3645173848378168003",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,
-  "retiredEntityUids": [],
+  "retiredEntityUids": [
+    6117339244360381770
+  ],
   "retiredIndexUids": [
     3191994156590455572
   ],
   "retiredPropertyUids": [
     3594803508846366057,
-    952155053874008187
+    952155053874008187,
+    6862399241802356519,
+    8947147389713750571,
+    8945857763459413324,
+    5791292606650345061
   ],
   "retiredRelationUids": [],
   "version": 1
