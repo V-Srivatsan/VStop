@@ -66,9 +66,10 @@ Future<void> updateTheme(BuildContext context) async {
 void syncData(BuildContext ctx) =>
   showDialog(context: ctx, builder: (context) => AlertDialog(
     title: Text("Sync Data"),
-    content: LoginForm(onAuth: (ctx) => Navigator.pushReplacement(
-      ctx, MaterialPageRoute(builder: (_) => sync.Screen())
-    )),
+    content: LoginForm(onAuth: (ctx) {
+      Database.clear(false);
+      Navigator.pushReplacement(ctx, MaterialPageRoute(builder: (_) => sync.Screen(partial: true)));
+    }),
   ));
 
 void shareApp() => SharePlus.instance.share(ShareParams(
