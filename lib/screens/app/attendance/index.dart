@@ -87,7 +87,8 @@ class _ScreenState extends State<Screen> {
                     )
                   ),
 
-                  DisplayCard(label: "Threshold", child: GestureDetector(
+                  DisplayCard(
+                    label: "Threshold",
                     onTap: () async {
                       final res = await showDialog(context: context, builder: (_) => UpdateThreshold(thres));
                       if (res != null) setState(() => thres = res);
@@ -96,7 +97,7 @@ class _ScreenState extends State<Screen> {
                       '$thres%',
                       style: Theme.of(context).textTheme.headlineMedium,
                     ),
-                  ))
+                  )
                 ],
               ),
 
