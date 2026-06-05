@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vstop/theme.dart';
 
 class DisplayCard extends StatelessWidget {
   final Color color; final String label; final Widget child;
