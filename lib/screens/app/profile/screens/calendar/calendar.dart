@@ -22,7 +22,6 @@ class _CalendarState extends State<Calendar> {
   @override
   void initState() {
     month = now.month; year = now.year; selected = now.day;
-    print(widget.entries);
     super.initState();
   }
 
