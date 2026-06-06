@@ -4,7 +4,8 @@ import 'package:vstop/widgets/calendar.dart';
 
 class AttendanceTile extends StatelessWidget {
   final TimetableEntry entry; final double thres;
-  const AttendanceTile(this.entry, {super.key, required this.thres });
+  final int skippable;
+  const AttendanceTile(this.entry, {super.key, required this.thres, required this.skippable });
 
   @override
   Widget build(BuildContext context) {
@@ -12,15 +13,19 @@ class AttendanceTile extends StatelessWidget {
     return Card(child: ListTile(
       title: Text(entry.course.target!.name),
       leading: Icon(entry.isLab ? Icons.science : Icons.book),
-      trailing: Stack(
-        alignment: .center,
-        children: [
-          CircularProgressIndicator(
-            value: entry.percentage, constraints: .tight(Size(50, 50)),
-            color: entry.percentage >= thres ? null : Theme.of(context).colorScheme.error,
-          ),
-          Text("${(entry.percentage * 100).round()}%"),
-        ],
+      trailing: Badge(
+        backgroundColor: skippable >= 0 ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.error,
+        label: Text(skippable.abs().toString(), style: TextStyle(color: skippable >= 0 ? Colors.black : Colors.white)),
+        child: Stack(
+          alignment: .center,
+          children: [
+            CircularProgressIndicator(
+              value: entry.percentage, constraints: .tight(Size(50, 50)),
+              color: entry.percentage >= thres ? null : Theme.of(context).colorScheme.error,
+            ),
+            Text("${(entry.percentage * 100).round()}%"),
+          ],
+        )
       ),
       onTap: () {
         showModalBottomSheet(context: context, builder: (_) => Padding(

@@ -113,7 +113,12 @@ class AcademicCalendar {
     _examBox.putMany(entries);
   }
 
-  static List<CalendarEntry> getEntries() => _box.getAll();
+  static List<CalendarEntry> getEntries([String? sem]) {
+    final query = _box.query();
+    if (sem != null) query.link(CalendarEntry_.sem, Semester_.code.equals(sem));
+    query.order(CalendarEntry_.date);
+    return query.build().find();
+  }
   static List<ExamEntry> getSchedule() => _examBox.getAll();
   static void clear() { _box.removeAll(); _examBox.removeAll(); }
 }

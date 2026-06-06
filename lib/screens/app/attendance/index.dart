@@ -6,6 +6,7 @@ import 'tile.dart';
 import 'package:vstop/lib/data/attendance.dart';
 import 'package:vstop/lib/data/timetable.dart';
 import 'package:vstop/lib/store.dart';
+import 'logic.dart' as logic;
 
 class Screen extends StatefulWidget {
   final void Function(List<Widget>) updateActions;
@@ -20,6 +21,8 @@ class _ScreenState extends State<Screen> {
   String sem = ""; int thres = 0;
   List<TimetableEntry> courses = [];
   bool syncing = false;
+
+  late final Map<String, int> slots;
 
   void getCourses() {
     final lst = Timetable(sem).getCourses().where((e) => !e.percentage.isNaN).toList();
@@ -52,6 +55,7 @@ class _ScreenState extends State<Screen> {
     () async {
       thres = await PrefStore.getAttThreshold();
       sem = await PrefStore.getSem(); getCourses();
+      slots = logic.getSlotCounts(sem);
     }();
   }
 
@@ -107,7 +111,10 @@ class _ScreenState extends State<Screen> {
 
           SliverList.builder(
             itemCount: courses.length,
-            itemBuilder: (_, i) => AttendanceTile(courses[i], thres: thres / 100),
+            itemBuilder: (_, i) => AttendanceTile(
+                courses[i], thres: thres / 100,
+                skippable: logic.getSkippable(courses[i], thres / 100, slots)
+            ),
           )
 
         ])
