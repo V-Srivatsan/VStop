@@ -12,20 +12,17 @@ class AttendanceTile extends StatelessWidget {
 
     return Card(child: ListTile(
       title: Text(entry.course.target!.name),
+      subtitle: Text("Skip: $skippable", style: Theme.of(context).textTheme.bodySmall),
       leading: Icon(entry.isLab ? Icons.science : Icons.book),
-      trailing: Badge(
-        backgroundColor: skippable >= 0 ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.error,
-        label: Text(skippable.abs().toString(), style: TextStyle(color: skippable >= 0 ? Colors.black : Colors.white)),
-        child: Stack(
-          alignment: .center,
-          children: [
-            CircularProgressIndicator(
-              value: entry.percentage, constraints: .tight(Size(50, 50)),
-              color: entry.percentage >= thres ? null : Theme.of(context).colorScheme.error,
-            ),
-            Text("${(entry.percentage * 100).round()}%"),
-          ],
-        )
+      trailing: Stack(
+        alignment: .center,
+        children: [
+          CircularProgressIndicator(
+            value: entry.percentage, constraints: .tight(Size(50, 50)),
+            color: entry.percentage >= thres ? null : Theme.of(context).colorScheme.error,
+          ),
+          Text("${(entry.percentage * 100).round()}%"),
+        ],
       ),
       onTap: () {
         showModalBottomSheet(context: context, builder: (_) => Padding(
