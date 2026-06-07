@@ -105,7 +105,8 @@ class AcademicCalendar {
 
       final entry = ExamEntry(
         course: title, date: date,
-        from: time.first.trim(), to: time.last.trim(),
+        from: DateFormat("HH:mm").format(DateFormat("hh:mm a").parse(time.first.trim())),
+        to: DateFormat("HH:mm").format(DateFormat("hh:mm a").parse(time.last.trim())),
         venue: venue, seatLoc: seatLoc, seatNo: seatNo
       ); entry.sem.target = sem;
       entries.add(entry);
@@ -119,6 +120,6 @@ class AcademicCalendar {
     query.order(CalendarEntry_.date);
     return query.build().find();
   }
-  static List<ExamEntry> getSchedule() => _examBox.getAll();
+  static List<ExamEntry> getSchedule() => _examBox.query().order(ExamEntry_.from).build().find();
   static void clear() { _box.removeAll(); _examBox.removeAll(); }
 }
