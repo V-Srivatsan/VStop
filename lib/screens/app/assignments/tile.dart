@@ -29,7 +29,7 @@ class AssignmentTile extends StatelessWidget {
       ),
       child: Card(child: ListTile(
         title: Text(assignment.title),
-        subtitle: Text(DateFormat("dd/MM/yyyy HH:mm").format(assignment.deadline)),
+        subtitle: Text(DateFormat("dd MMM, HH:mm").format(assignment.deadline)),
         trailing: assignment.completed || assignment.deadline.isAfter(.now()) ? null :
           Chip(label: Text("Due"), backgroundColor: Theme.of(context).colorScheme.error),
         onTap: onTap,
