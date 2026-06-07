@@ -30,7 +30,8 @@ class _ScreenState extends State<Screen> {
     () async {
       final name = await PrefStore.getName();
       final timetable = Timetable(await PrefStore.getSem());
-      final schedule = tt_logic.getSchedule(timetable.getCourses(), DateTime.now().weekday);
+      final weekday = tt_logic.getTodayWeekday();
+      final schedule = weekday == null ? <tt_logic.ScheduleClass>[] : tt_logic.getSchedule(timetable.getCourses(), weekday);
 
       if (!mounted) { user = name; classes = schedule; sem = timetable.sem; }
       else setState(() { user = name; classes = schedule; sem = timetable.sem; });

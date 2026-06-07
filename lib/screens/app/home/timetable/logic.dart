@@ -1,4 +1,6 @@
+import 'package:intl/intl.dart';
 import 'package:vstop/lib/data/timetable.dart';
+import 'package:vstop/lib/data/calendar.dart';
 import 'consts.dart' as consts;
 
 class ScheduleClass {
@@ -14,6 +16,13 @@ class ScheduleClass {
 
     return '${format(start)} - ${format(end)}';
   }
+}
+
+int? getTodayWeekday() {
+  final today = DateFormat("yyyyMMdd").format(DateTime.now());
+  for (var e in AcademicCalendar.getEntries())
+    if (e.date == today) return e.weekday;
+  return null;
 }
 
 List<ScheduleClass> getSchedule(List<TimetableEntry> entries, int weekday) {
