@@ -9,7 +9,8 @@ import 'package:vstop/lib/data/calendar.dart';
 
 import 'package:vstop/lib/store.dart';
 
-Future<bool> syncData(int Function(int, String) update, [bool partial = false]) async {
+Future<bool> syncData(int Function(int, String) update, bool partial) async {
+  Database.clear(!partial);
   int p = 0, sem_update = 0;
 
   if (!partial) {
