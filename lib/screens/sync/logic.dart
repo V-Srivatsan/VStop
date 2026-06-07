@@ -8,6 +8,7 @@ import 'package:vstop/lib/data/marks.dart';
 import 'package:vstop/lib/data/calendar.dart';
 
 import 'package:vstop/lib/store.dart';
+import 'package:vstop/lib/notification.dart';
 
 Future<bool> syncData(int Function(int, String) update, bool partial) async {
   Database.clear(!partial);
@@ -58,6 +59,7 @@ Future<bool> syncData(int Function(int, String) update, bool partial) async {
   requests.add(AcademicCalendar.fetchExamSchedule(sems.first.code));
 
   await Future.wait(requests);
+  await scheduleDailyNotifications(true);
   update(100, "");
   return true;
 }
