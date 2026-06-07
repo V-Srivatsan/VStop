@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:vstop/lib/data/calendar.dart';
+import 'package:vstop/lib/data/assignments.dart';
 
 class Details extends StatelessWidget {
   final Map<String, CalendarEntry> entries;
   final Map<String, List<ExamEntry>> exams;
+  final Map<String, List<Assignment>> assignments;
   final String? date;
-  const Details({super.key, required this.entries, required this.exams, required this.date });
+  const Details({super.key, required this.entries, required this.exams, required this.assignments, required this.date });
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,15 @@ class Details extends StatelessWidget {
               ],
             ),
             trailing: Text(exam.venue.replaceAll('-', '\n')),
-          ))
+          )),
+
+        if (exams[date!] != null && assignments[date!] != null) Divider(),
+
+        for (var assignment in assignments[date!] ?? <Assignment>[])
+          Card(child: ListTile(
+            title: Text(assignment.title), trailing: Badge(),
+            subtitle: Text("Due: ${DateFormat("hh:mm").format(assignment.deadline)}"),
+          )),
       ],
     ));
   }

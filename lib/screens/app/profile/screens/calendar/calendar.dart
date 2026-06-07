@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:vstop/lib/data/calendar.dart';
+import 'package:vstop/lib/data/assignments.dart';
 import 'package:vstop/widgets/calendar.dart';
 
 
 class Calendar extends StatefulWidget {
   final Map<String, CalendarEntry> entries;
   final Map<String, List<ExamEntry>> exams;
+  final Map<String, List<Assignment>> assignments;
   final void Function(String?) onSelect;
-  const Calendar({ super.key, required this.entries, required this.exams, required this.onSelect });
+  const Calendar({ super.key, required this.entries, required this.exams, required this.assignments, required this.onSelect });
 
   @override
   State<Calendar> createState() => _CalendarState();
@@ -97,7 +99,9 @@ class _CalendarState extends State<Calendar> {
                           )),
 
                         if (widget.exams[key] != null)
-                          Badge(backgroundColor: Theme.of(context).colorScheme.error)
+                          Badge(backgroundColor: Theme.of(context).colorScheme.error),
+
+                        if (widget.assignments[key] != null) Badge()
 
                       ];
                     }(),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:vstop/lib/data/calendar.dart';
+import 'package:vstop/lib/data/assignments.dart';
+import 'package:vstop/lib/store.dart';
 
 import 'calendar.dart';
 import 'details.dart';
@@ -17,6 +20,7 @@ class _ScreenState extends State<Screen> {
 
   late final Map<String, CalendarEntry> entries;
   late final Map<String, List<ExamEntry>> exams;
+  Map<String, List<Assignment>> assignments = {};
   String? key;
 
   @override
@@ -25,6 +29,14 @@ class _ScreenState extends State<Screen> {
     entries = .fromEntries(logic.getEntries().map((e) => MapEntry(e.date, e)));
     exams = {};
     for (var entry in logic.getExams()) exams.putIfAbsent(entry.date, () => []).add(entry);
+    PrefStore.getSem().then((sem) {
+      final lst = <String, List<Assignment>>{};
+      for (var assignment in AssignmentStore(sem).getAssignments())
+        if (!assignment.completed)
+          lst.putIfAbsent(DateFormat("yyyyMMdd").format(assignment.deadline), () => []).add(assignment);
+      if (context.mounted) setState(() => assignments = lst);
+      else assignments = lst;
+    });
   }
 
   @override
@@ -45,8 +57,8 @@ class _ScreenState extends State<Screen> {
           spacing: 20,
           children: [
 
-            Calendar(entries: entries, exams: exams, onSelect: (key) => setState(() => this.key = key)),
-            Details(entries: entries, exams: exams, date: key)
+            Calendar(entries: entries, exams: exams, assignments: assignments, onSelect: (key) => setState(() => this.key = key)),
+            Details(entries: entries, exams: exams, assignments: assignments, date: key)
 
           ],
         ),
