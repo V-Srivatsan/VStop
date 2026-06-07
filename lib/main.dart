@@ -8,6 +8,7 @@ import 'lib/net.dart';
 import 'lib/store.dart';
 import 'lib/data/index.dart';
 import 'lib/fcm.dart';
+import 'lib/notification.dart';
 
 import 'theme.dart' as theme;
 import 'screens/splash/index.dart' as splash;
@@ -19,6 +20,7 @@ void main() async {
   await Database.init(); await PrefStore.getTheme();
 
   FirebaseMessaging.onBackgroundMessage(FCMBackground);
+  await NotificationController.initialize();
 
   runApp(ValueListenableBuilder<AppTheme>(
     valueListenable: PrefStore.theme,

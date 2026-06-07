@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:vstop/lib/data/index.dart';
@@ -75,3 +76,5 @@ void syncData(BuildContext ctx) =>
 void shareApp() => SharePlus.instance.share(ShareParams(
     text: "Check out this one-stop solution for V-TOP: V-STOP!\n\nDownload here: https://github.com/V-Srivatsan/VStop/releases/latest"
 ));
+
+void notificationSettings() => AwesomeNotifications().showNotificationConfigPage();
