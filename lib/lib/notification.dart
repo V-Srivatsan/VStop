@@ -42,7 +42,7 @@ class NotificationController {
     schedule: schedule == null ? null : NotificationCalendar(
       allowWhileIdle: true, preciseAlarm: false,
       year: schedule.year, month: schedule.month, day: schedule.day,
-      hour: schedule.hour, minute: schedule.minute, second: schedule.second
+      hour: schedule.hour, minute: schedule.minute
     )
   );
 
