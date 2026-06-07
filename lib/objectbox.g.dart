@@ -14,6 +14,7 @@ import 'package:objectbox/internal.dart'
 import 'package:objectbox/objectbox.dart' as obx;
 import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
+import 'lib/data/assignments.dart';
 import 'lib/data/calendar.dart';
 import 'lib/data/course.dart';
 import 'lib/data/marks.dart';
@@ -379,6 +380,52 @@ final _entities = <obx_int.ModelEntity>[
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[],
   ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(9, 655735096497057320),
+    name: 'Assignment',
+    lastPropertyId: const obx_int.IdUid(8, 1756149690326876027),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 231166197735051193),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 8087541202365656930),
+        name: 'title',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(5, 6569343766525721464),
+        name: 'description',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(6, 8987961969144580934),
+        name: 'deadline',
+        type: 10,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(7, 9099442987843282604),
+        name: 'completed',
+        type: 1,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(8, 1756149690326876027),
+        name: 'sem',
+        type: 9,
+        flags: 0,
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
 ];
 
 /// Shortcut for [obx.Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -424,12 +471,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
     // Typically, this is done with `dart run build_runner build`.
     generatorVersion: obx_int.GeneratorVersion.v2025_12_16,
     entities: _entities,
-    lastEntityId: const obx_int.IdUid(8, 7941267040545297008),
-    lastIndexId: const obx_int.IdUid(12, 3645173848378168003),
+    lastEntityId: const obx_int.IdUid(9, 655735096497057320),
+    lastIndexId: const obx_int.IdUid(13, 1552415668056798070),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
     retiredEntityUids: const [6117339244360381770],
-    retiredIndexUids: const [3191994156590455572],
+    retiredIndexUids: const [3191994156590455572, 1552415668056798070],
     retiredPropertyUids: const [
       3594803508846366057,
       952155053874008187,
@@ -437,6 +484,8 @@ obx_int.ModelDefinition getObjectBoxModel() {
       8947147389713750571,
       8945857763459413324,
       5791292606650345061,
+      3983228616316491681,
+      1532407042799090196,
     ],
     retiredRelationUids: const [],
     modelVersion: 5,
@@ -924,6 +973,67 @@ obx_int.ModelDefinition getObjectBoxModel() {
         return object;
       },
     ),
+    Assignment: obx_int.EntityDefinition<Assignment>(
+      model: _entities[7],
+      toOneRelations: (Assignment object) => [],
+      toManyRelations: (Assignment object) => {},
+      getId: (Assignment object) => object.id,
+      setId: (Assignment object, int id) {
+        object.id = id;
+      },
+      objectToFB: (Assignment object, fb.Builder fbb) {
+        final titleOffset = fbb.writeString(object.title);
+        final descriptionOffset = fbb.writeString(object.description);
+        final semOffset = fbb.writeString(object.sem);
+        fbb.startTable(9);
+        fbb.addInt64(0, object.id);
+        fbb.addOffset(3, titleOffset);
+        fbb.addOffset(4, descriptionOffset);
+        fbb.addInt64(5, object.deadline.millisecondsSinceEpoch);
+        fbb.addBool(6, object.completed);
+        fbb.addOffset(7, semOffset);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+        final idParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          4,
+          0,
+        );
+        final semParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 18, '');
+        final titleParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 10, '');
+        final descriptionParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 12, '');
+        final deadlineParam = DateTime.fromMillisecondsSinceEpoch(
+          const fb.Int64Reader().vTableGet(buffer, rootOffset, 14, 0),
+        );
+        final completedParam = const fb.BoolReader().vTableGet(
+          buffer,
+          rootOffset,
+          16,
+          false,
+        );
+        final object = Assignment(
+          id: idParam,
+          sem: semParam,
+          title: titleParam,
+          description: descriptionParam,
+          deadline: deadlineParam,
+          completed: completedParam,
+        );
+
+        return object;
+      },
+    ),
   };
 
   return obx_int.ModelDefinition(model, bindings);
@@ -1165,5 +1275,38 @@ class ExamEntry_ {
   /// See [ExamEntry.seatNo].
   static final seatNo = obx.QueryStringProperty<ExamEntry>(
     _entities[6].properties[8],
+  );
+}
+
+/// [Assignment] entity fields to define ObjectBox queries.
+class Assignment_ {
+  /// See [Assignment.id].
+  static final id = obx.QueryIntegerProperty<Assignment>(
+    _entities[7].properties[0],
+  );
+
+  /// See [Assignment.title].
+  static final title = obx.QueryStringProperty<Assignment>(
+    _entities[7].properties[1],
+  );
+
+  /// See [Assignment.description].
+  static final description = obx.QueryStringProperty<Assignment>(
+    _entities[7].properties[2],
+  );
+
+  /// See [Assignment.deadline].
+  static final deadline = obx.QueryDateProperty<Assignment>(
+    _entities[7].properties[3],
+  );
+
+  /// See [Assignment.completed].
+  static final completed = obx.QueryBooleanProperty<Assignment>(
+    _entities[7].properties[4],
+  );
+
+  /// See [Assignment.sem].
+  static final sem = obx.QueryStringProperty<Assignment>(
+    _entities[7].properties[5],
   );
 }

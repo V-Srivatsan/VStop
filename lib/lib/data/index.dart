@@ -1,6 +1,7 @@
 import 'package:vstop/objectbox.g.dart';
 
 import 'sem.dart' show SemStore;
+import 'assignments.dart' show AssignmentStore;
 import 'calendar.dart' show AcademicCalendar;
 import 'course.dart' show CourseStore;
 import 'timetable.dart' show Timetable;
@@ -11,7 +12,7 @@ class Database {
 
   static Future<void> init() async => _store = await openStore();
   static void clear([bool full = true]) {
-    if (full) CourseStore.clear();
+    if (full) { CourseStore.clear(); AssignmentStore.clear(); }
     SemStore.clear(); AcademicCalendar.clear();
     Timetable.clear(); MarkStore.clear();
   }
