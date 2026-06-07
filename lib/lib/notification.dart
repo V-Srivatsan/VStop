@@ -49,4 +49,6 @@ class NotificationController {
   static Future<void> cancelNotification(String id) async =>
       await _instance.cancelSchedule(id.hashCode);
 
+  static Future<void> cancelNotifications(List<String> channels) async =>
+    await Future.wait(channels.map((channel) => _instance.cancelSchedulesByChannelKey(channel)));
 }
