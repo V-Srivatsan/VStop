@@ -6,6 +6,7 @@ import 'package:vstop/screens/app/home/timetable/consts.dart';
 
 Map<String, int> getSlotCounts(String sem) {
   final today = DateFormat("yyyyMMdd").format(DateTime.now());
+  int? today_weekday;
   final counts = List.filled(5, 0);
 
   for (
@@ -13,19 +14,8 @@ Map<String, int> getSlotCounts(String sem) {
     AcademicCalendar.getEntries(sem)
       .where((e) => e.entryType == .instructional && today.compareTo(e.date) <= 0)
   ) {
-    int idx;
-
-    final weekday = DateTime.parse(entry.date).weekday;
-    if (weekday != DateTime.saturday && weekday != DateTime.sunday) idx = weekday - DateTime.monday;
-    else {
-      if (entry.comment.contains("Mon")) idx = 0;
-      if (entry.comment.contains("Tue")) idx = 1;
-      if (entry.comment.contains("Wed")) idx = 2;
-      if (entry.comment.contains("Thu")) idx = 3;
-      idx = 4;
-    }
-
-    counts[idx]++;
+    counts[entry.weekday! - DateTime.monday]++;
+    if (today == entry.date) today_weekday = entry.weekday! - DateTime.monday;
   }
 
   final slotCounts = <String, int>{};
@@ -33,6 +23,14 @@ Map<String, int> getSlotCounts(String sem) {
     if (counts[i] > 0)
       for (var slot in (slots[i].$1 + slots[i].$2))
         slotCounts[slot] = (slotCounts[slot] ?? 0) + counts[i];
+  }
+  if (today_weekday != null) {
+    final now = DateTime.now(); final now_duration = Duration(hours: now.hour, minutes: now.minute);
+    for (var i=0; i < 12; i++) {
+      final tslot = slots[today_weekday].$1[i], lslot = slots[today_weekday].$2[i];
+      if (theory[i].$1 < now_duration) slotCounts[tslot] = (slotCounts[tslot] ?? 1) - 1;
+      if (lab[i].$1 < now_duration) slotCounts[lslot] = (slotCounts[lslot] ?? 1) - 1;
+    }
   }
   return slotCounts;
 }

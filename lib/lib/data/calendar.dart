@@ -21,6 +21,19 @@ class CalendarEntry {
     type == "Instructional Day" ? .instructional :
     type == "Holiday" || type == "No Instructional Day" ? .holiday : .exam
   );
+
+  int? get weekday {
+    if (entryType != .instructional) return null;
+    final dt = DateTime.parse(date);
+    if (dt.weekday == DateTime.saturday || dt.weekday == DateTime.sunday) {
+      if (comment.contains("Mon")) return DateTime.monday;
+      if (comment.contains("Tue")) return DateTime.tuesday;
+      if (comment.contains("Wed")) return DateTime.wednesday;
+      if (comment.contains("Thu")) return DateTime.thursday;
+      return DateTime.friday;
+    }
+    return dt.weekday;
+  }
 }
 
 @Entity()
