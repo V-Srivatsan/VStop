@@ -1,7 +1,8 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:vstop/lib/data/index.dart';
+import 'package:awesome_notifications/awesome_notifications.dart' show AwesomeNotifications;
+import 'package:vstop/lib/notification.dart';
 import 'package:vstop/lib/store.dart';
 
 import 'package:vstop/screens/login/index.dart' as auth;
@@ -18,6 +19,11 @@ Future<void> logout(BuildContext context) async {
   Database.clear(); await PrefStore.setTheme(.system);
   await PrefStore.clear();
   await SecureStorage.clear();
+  await NotificationController.cancelNotifications([
+    NotificationController.CLASS_REMINDER_CHANNEL,
+    NotificationController.EXAM_REMINDER_CHANNEL,
+    NotificationController.ASSIGNMENT_REMINDER_CHANNEL
+  ]);
 
   if (context.mounted)
     Navigator.of(context).pushAndRemoveUntil(
@@ -69,6 +75,10 @@ void syncData(BuildContext ctx) =>
     title: Text("Sync Data"),
     content: LoginForm(onAuth: (ctx) {
       Database.clear(false);
+      NotificationController.cancelNotifications([
+        NotificationController.CLASS_REMINDER_CHANNEL,
+        NotificationController.EXAM_REMINDER_CHANNEL
+      ]);
       Navigator.pushReplacement(ctx, MaterialPageRoute(builder: (_) => sync.Screen(partial: true)));
     }),
   ));
