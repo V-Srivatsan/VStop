@@ -15,6 +15,7 @@ class VStopColors {
   static const darkTextSecondary = Color(0xFF7FA8A8);
   static const darkSuccess       = Color(0xFF4CAF82);
   static const darkWarning       = Color(0xFFE05C5C);
+  static const darkBadge         = Color(0xFF9B8EC4);
 
   // AMOLED
   static const amoledBackground    = Color(0xFF000000);
@@ -22,6 +23,7 @@ class VStopColors {
   static const amoledSurface       = Color(0xFF0A0A0A);
   static const amoledSurfaceVar    = Color(0xFF111111);
   static const amoledCardHighlight = Color(0xFF0D1A1A);
+  static const amoledBadge         = Color(0xFF9B8EC4);
 
   // Light
   static const lightBackground    = Color(0xFFF2F7F7);
@@ -33,6 +35,7 @@ class VStopColors {
   static const lightTextSecondary = Color(0xFF5A7A7A);
   static const lightSuccess       = Color(0xFF3A9E6E);
   static const lightWarning       = Color(0xFFD94F4F);
+  static const lightBadge         = Color(0xFF7B6BAF);
 }
 
 // ── Text Themes ───────────────────────────────────────────────────────────────
@@ -294,6 +297,8 @@ final darkTheme = ThemeData(
     textColor: VStopColors.darkTextPrimary,
     iconColor: VStopColors.darkTeal,
   ),
+
+  badgeTheme: BadgeThemeData(backgroundColor: VStopColors.darkBadge)
 );
 
 // ── AMOLED Theme ───────────────────────────────────────────────────────────────
@@ -478,6 +483,8 @@ final amoledTheme = ThemeData(
     textColor: VStopColors.darkTextPrimary,
     iconColor: VStopColors.darkTeal,
   ),
+
+  badgeTheme: BadgeThemeData(backgroundColor: VStopColors.amoledBadge)
 );
 
 // ── Light Theme ───────────────────────────────────────────────────────────────
@@ -657,4 +664,6 @@ final lightTheme = ThemeData(
     textColor: VStopColors.lightTextPrimary,
     iconColor: VStopColors.lightTeal,
   ),
+
+  badgeTheme: BadgeThemeData(backgroundColor: VStopColors.lightBadge)
 );
