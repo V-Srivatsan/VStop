@@ -88,16 +88,13 @@ void scheduleWork() async {
       ]);
 
       String formatTime(Duration d) =>
-          "${d.inHours}:${d.inMinutes.remainder(60)}";
+          "${d.inHours.toString().padLeft(2, '0')}:${d.inMinutes.remainder(60).toString().padLeft(2, '0')}";
 
       final today = DateFormat("yyyyMMdd").format(.now());
       CalendarEntry? entry;
       List<ExamEntry> exams = [];
       for (var e in AcademicCalendar.getEntries(sem))
-        if (e.date.compareTo(today) == 0) {
-          entry = e;
-          break;
-        }
+        if (e.date.compareTo(today) == 0) { entry = e; break; }
 
       for (var e in AcademicCalendar.getSchedule())
         if (e.date.compareTo(today) == 0) exams.add(e);
@@ -106,10 +103,11 @@ void scheduleWork() async {
       if (entry != null && entry.weekday != null)
         for (var slot in getSchedule(courses, entry.weekday!))
           NotificationController.showNotification(
-              id: 'class_${slot.start}',
-              channel: NotificationController.CLASS_REMINDER_CHANNEL,
-              title: 'Next Class: ${slot.entry.course.target!.name}',
-              body: '${formatTime(slot.start)} - ${formatTime(slot.end)}'
+            id: 'class_${slot.start}',
+            channel: NotificationController.CLASS_REMINDER_CHANNEL,
+            title: 'Next Class: ${slot.entry.course.target!.name}',
+            body: '${formatTime(slot.start)} - ${formatTime(slot.end)}',
+            schedule: DateFormat('yyyyMMdd HH:mm').parse('$today ${formatTime(slot.start - Duration(minutes: 15))}')
           );
 
       for (var exam in exams)
