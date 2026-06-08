@@ -4,7 +4,8 @@ import 'package:vstop/screens/app/index.dart' as app;
 import 'logic.dart';
 
 class Screen extends StatefulWidget {
-  const Screen({super.key});
+  final bool partial;
+  const Screen({super.key, this.partial = false });
 
   @override
   State<Screen> createState() => _ScreenState();
@@ -27,7 +28,7 @@ class _ScreenState extends State<Screen> {
       );
 
       return p;
-    });
+    }, widget.partial);
   }
 
 

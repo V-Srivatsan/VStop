@@ -2,12 +2,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:workmanager/workmanager.dart';
 import 'firebase_options.dart';
 
 import 'lib/net.dart';
 import 'lib/store.dart';
 import 'lib/data/index.dart';
 import 'lib/fcm.dart';
+import 'lib/notification.dart';
 
 import 'theme.dart' as theme;
 import 'screens/splash/index.dart' as splash;
@@ -19,6 +21,8 @@ void main() async {
   await Database.init(); await PrefStore.getTheme();
 
   FirebaseMessaging.onBackgroundMessage(FCMBackground);
+  await NotificationController.initialize();
+  Workmanager().initialize(scheduleWork);
 
   runApp(ValueListenableBuilder<AppTheme>(
     valueListenable: PrefStore.theme,

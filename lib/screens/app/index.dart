@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'home/index.dart' as home;
 import 'attendance/index.dart' as attendance;
+import 'assignments/index.dart' as assignments;
 import 'marks/index.dart' as marks;
 import 'profile/index.dart' as profile;
 
 const MENU = [
   ("Dashboard", Icons.dashboard_outlined, Icons.dashboard),
   ("Attendance", Icons.fact_check_outlined, Icons.fact_check),
+  ("Assignments", Icons.assignment_outlined, Icons.assignment),
   ("Marks", Icons.note_alt_outlined, Icons.note_alt),
   ("Profile", Icons.person_2_outlined, Icons.person_2)
 ];
@@ -21,6 +23,9 @@ class Screen extends StatefulWidget {
 class _ScreenState extends State<Screen> {
 
   int idx = 0; List<Widget> actions = [];
+  FloatingActionButton? fab;
+
+  void setFab(FloatingActionButton? btn) => setState(() => fab = btn);
 
   void updateActions(List<Widget> lst) {
     if (mounted) setState(() => actions = lst);
@@ -33,15 +38,16 @@ class _ScreenState extends State<Screen> {
       appBar: AppBar(
         title: Text(MENU.map((item)=>item.$1).toList()[idx]),
         actions: actions,
-      ),
+      ), floatingActionButton: fab,
       body: [
         home.Screen(),
         attendance.Screen(updateActions),
+        assignments.Screen(setFab),
         marks.Screen(updateActions),
         profile.Screen()
       ][idx],
       bottomNavigationBar: BottomNavigationBar(
-        onTap: (i) => idx == i ? null : setState(() { idx = i; actions = []; }), currentIndex: idx,
+        onTap: (i) => idx == i ? null : setState(() { idx = i; actions = []; fab = null; }), currentIndex: idx,
         items: MENU.indexed.map((item) => BottomNavigationBarItem(
           icon: Icon(idx == item.$1 ? item.$2.$3 : item.$2.$2),
           label: item.$2.$1

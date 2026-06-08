@@ -30,7 +30,7 @@ class Overview extends StatelessWidget {
 
     final text = Theme.of(context).brightness == .dark ? Colors.white : Colors.black;
 
-    final start = next == null ? '' :
+    final start = next == null ? '--' :
       "${next!.start.inHours.toString().padLeft(2, '0')}:${next!.start.inMinutes.remainder(60).toString().padLeft(2, '0')}";
 
     return Column(
@@ -56,7 +56,7 @@ class Overview extends StatelessWidget {
                 children: [
                   Text(start, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: text)),
                   Text(
-                      next?.entry.venue! ?? '',
+                      next?.entry.venue! ?? '--',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontWeight: .bold,
                         color: Theme.of(context).colorScheme.secondary

@@ -5,6 +5,7 @@ import 'package:vstop/lib/webview.dart';
 import 'package:vstop/lib/store.dart';
 
 const NICKNAMES = {};
+const SALT = String.fromEnvironment('SALT', defaultValue: '');
 
 Future<void> fetchProfile() async {
   final res = await WebView.request(
@@ -16,7 +17,7 @@ Future<void> fetchProfile() async {
   final appNo = doc.querySelector('tbody td:nth-child(2)')!.text!.trim();
   final reg = doc.querySelector('label[for="no"]')!.text!.trim();
 
-  final authBase = "$appNo:$reg";
+  final authBase = "$SALT:$appNo:$reg";
   final authHash = sha256.convert(utf8.encode(authBase)).toString();
   await SecureStorage.set("auth", authHash);
 

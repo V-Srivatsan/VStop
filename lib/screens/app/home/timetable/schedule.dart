@@ -9,7 +9,8 @@ class Schedule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
+    return classes.isEmpty ? Center(child: Text("No classes today")) :
+    ListView(
       shrinkWrap: !scrollable, physics: !scrollable ? NeverScrollableScrollPhysics() : null,
       children: classes.map((e) => TimetableCard(e)).toList(),
     );

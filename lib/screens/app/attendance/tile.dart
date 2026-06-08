@@ -4,13 +4,15 @@ import 'package:vstop/widgets/calendar.dart';
 
 class AttendanceTile extends StatelessWidget {
   final TimetableEntry entry; final double thres;
-  const AttendanceTile(this.entry, {super.key, required this.thres });
+  final int skippable;
+  const AttendanceTile(this.entry, {super.key, required this.thres, required this.skippable });
 
   @override
   Widget build(BuildContext context) {
 
     return Card(child: ListTile(
       title: Text(entry.course.target!.name),
+      subtitle: Text("Skip: $skippable", style: Theme.of(context).textTheme.bodySmall),
       leading: Icon(entry.isLab ? Icons.science : Icons.book),
       trailing: Stack(
         alignment: .center,

@@ -39,7 +39,7 @@ class Screen extends StatelessWidget {
               ),
               Divider(),
               ListTile(
-                title: Text("ACE Grading System"), leading: Icon(Icons.grade),
+                title: Text("ACE Grading System"), leading: Icon(Icons.grade_outlined),
                 trailing: PrefSwitch(getValue: logic.getACEGrading, onChanged: (val) async {
                   await logic.setACEGrading(val);
                   if (context.mounted) showDialog(context: context, builder: (_) => AlertDialog(
@@ -55,6 +55,11 @@ class Screen extends StatelessWidget {
               ListTile(
                 title: Text("Change Theme"), leading: Icon(Icons.brightness_medium),
                 onTap: () => logic.updateTheme(context),
+              ),
+              Divider(),
+              ListTile(
+                title: Text("Notification Settings"), leading: Icon(Icons.notifications_outlined),
+                onTap: () => logic.notificationSettings(),
               ),
               Divider(),
               ListTile(
