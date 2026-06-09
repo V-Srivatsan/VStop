@@ -1,8 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:vstop/lib/data/calendar.dart';
 import 'package:vstop/lib/data/timetable.dart';
-
-import 'package:vstop/screens/app/home/timetable/consts.dart';
+import 'package:vstop/lib/consts.dart';
 
 Map<String, int> getSlotCounts(String sem) {
   final today = DateFormat("yyyyMMdd").format(DateTime.now());

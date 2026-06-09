@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:vstop/lib/data/timetable.dart';
 import 'package:vstop/lib/data/calendar.dart';
-import 'consts.dart' as consts;
+import 'package:vstop/lib/consts.dart' as consts;
 
 class ScheduleClass {
   final TimetableEntry entry;
