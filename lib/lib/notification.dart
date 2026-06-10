@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:vstop/lib/data/index.dart';
-import 'package:vstop/lib/data/calendar.dart';
-import 'package:vstop/lib/data/timetable.dart';
+import 'db.dart';
 import 'package:vstop/lib/store.dart';
 import 'package:vstop/screens/app/home/timetable/logic.dart' show getSchedule;
 

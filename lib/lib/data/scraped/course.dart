@@ -2,8 +2,7 @@ import 'package:objectbox/objectbox.dart';
 import 'package:universal_html/parsing.dart';
 import 'package:vstop/lib/webview.dart';
 import 'package:vstop/objectbox.g.dart';
-import 'index.dart';
-import 'timetable.dart' show TimetableEntry;
+import 'package:vstop/lib/db.dart';
 
 @Entity()
 class CourseCategory {

@@ -3,8 +3,7 @@ import 'package:vstop/screens/login/form.dart';
 import 'package:vstop/widgets/display_card.dart';
 import 'tile.dart';
 
-import 'package:vstop/lib/data/attendance.dart';
-import 'package:vstop/lib/data/timetable.dart';
+import 'package:vstop/lib/db.dart';
 import 'package:vstop/lib/store.dart';
 import 'logic.dart' as logic;
 
@@ -43,7 +42,7 @@ class _ScreenState extends State<Screen> {
                 if (ctx.mounted) Navigator.pop(ctx);
                 setState(() => syncing = true);
 
-                await fetchAttendance(sem);
+                await Timetable(sem).fetchAttendance();
                 syncing = false;
                 getCourses();
               })

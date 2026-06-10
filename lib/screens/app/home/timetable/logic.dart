@@ -1,6 +1,5 @@
 import 'package:intl/intl.dart';
-import 'package:vstop/lib/data/timetable.dart';
-import 'package:vstop/lib/data/calendar.dart';
+import 'package:vstop/lib/db.dart';
 import 'package:vstop/lib/consts.dart' as consts;
 
 class ScheduleClass {

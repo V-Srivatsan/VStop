@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vstop/lib/data/assignments.dart';
+import 'package:vstop/lib/data/local/assignments.dart';
 import 'package:vstop/lib/store.dart';
 
 import 'tile.dart';

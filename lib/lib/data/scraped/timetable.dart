@@ -1,14 +1,12 @@
 import 'package:universal_html/parsing.dart' show parseHtmlDocument;
+import 'package:intl/intl.dart';
 import 'package:vstop/lib/webview.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'firestore.dart';
+import '../remote/firestore.dart';
 
 import 'package:objectbox/objectbox.dart';
 import 'package:vstop/objectbox.g.dart';
-import 'index.dart';
-import 'course.dart';
-import 'sem.dart';
-import 'marks.dart';
+import 'package:vstop/lib/db.dart';
 
 @Entity()
 class TimetableEntry {
@@ -101,6 +99,51 @@ class Timetable {
     }
 
     _box.putMany(entries);
+  }
+  Future<void> fetchAttendance() async {
+    final entries = Map<String, TimetableEntry>.fromEntries(
+      getCourses().map((entry) => MapEntry(entry.classId, entry))
+    );
+
+    // This request "fixes" the session issue
+    // The session has to request a semester timetable before requested detailed view
+    await WebView.request(
+        "https://vtopcc.vit.ac.in/vtop/processViewStudentAttendance",
+        { "semesterSubId": sem.code }
+    );
+
+    List<Future<void>> requests = [];
+
+    for (String classId in entries.keys) {
+      if (entries[classId]!.slots.isEmpty) continue;
+
+      entries[classId]!.present = []; entries[classId]!.absent = [];
+
+      requests.add(() async {
+        final res = await WebView.request(
+            "https://vtopcc.vit.ac.in/vtop/processViewAttendanceDetail",
+            { "classId": classId, "slotName": entries[classId]!.slots.join("+") }
+        );
+        final doc = parseHtmlDocument(res);
+        final rows = doc.querySelectorAll('table tbody tr');
+        for (var row in rows) {
+          final date = DateFormat("yyyyMMdd")
+              .format(DateFormat("dd-MMM-yyyy").parse(row.children[1].text!.trim()));
+
+          final od = row.children[4].text!.trim()[0] == "O";
+          final present = row.children[4].text!.trim()[0] == "P";
+
+          final slots = row.children[2].text!.trim().split("+").length;
+          if (present || od)
+            for (int i=0; i < slots; i++) entries[classId]!.present.add('$date${od ? '.' : ""}');
+          else
+            for (int i=0; i < slots; i++) entries[classId]!.absent.add(date);
+        }
+      }());
+    }
+
+    await Future.wait(requests);
+    _box.putMany(entries.values.toList());
   }
 
   List<TimetableEntry> getCourses() {

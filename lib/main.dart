@@ -7,7 +7,7 @@ import 'firebase_options.dart';
 
 import 'lib/net.dart';
 import 'lib/store.dart';
-import 'lib/data/index.dart';
+import 'lib/db.dart';
 import 'lib/fcm.dart';
 import 'lib/notification.dart';
 

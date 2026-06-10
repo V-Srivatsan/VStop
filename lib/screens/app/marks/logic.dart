@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'mark_tile.dart';
 
-import 'package:vstop/lib/data/marks.dart';
-import 'package:vstop/lib/data/timetable.dart';
-import 'package:vstop/lib/data/course.dart';
+import 'package:vstop/lib/data/scraped/marks.dart';
+import 'package:vstop/lib/data/scraped/timetable.dart';
+import 'package:vstop/lib/data/scraped/course.dart';
 import 'package:vstop/screens/login/form.dart';
 
 void syncMarks(

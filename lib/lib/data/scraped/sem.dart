@@ -3,7 +3,7 @@ import 'package:vstop/lib/webview.dart';
 
 import 'package:objectbox/objectbox.dart';
 import 'package:vstop/objectbox.g.dart';
-import 'index.dart';
+import 'package:vstop/lib/db.dart';
 
 @Entity()
 class Semester {

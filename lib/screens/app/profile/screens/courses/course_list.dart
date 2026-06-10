@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vstop/lib/data/course.dart';
+import 'package:vstop/lib/db.dart';
 
 import 'package:vstop/widgets/display_card.dart';
 
@@ -65,7 +65,8 @@ class CourseList extends StatelessWidget {
 
 class SearchableList extends StatefulWidget {
   final List<Course> courses;
-  const SearchableList(this.courses, {super.key});
+  final void Function(Course course)? onTap;
+  const SearchableList(this.courses, {super.key, this.onTap});
 
   @override
   State<SearchableList> createState() => _SearchableListState();
@@ -112,7 +113,7 @@ class _SearchableListState extends State<SearchableList> {
         itemBuilder: (_, i) => Card(
           color: filtered[i].completed ? Theme.of(context).colorScheme.tertiary.withAlpha(128) : null,
           child: ListTile(
-            title: Text(filtered[i].name),
+            title: Text(filtered[i].name), onTap: widget.onTap == null ? null : () => widget.onTap!(filtered[i]),
             subtitle: Text(filtered[i].completed ? 'Grade: ${filtered[i].grade!}' : filtered[i].code),
             trailing: Text(filtered[i].credits.toStringAsFixed(1)),
             leading: (
