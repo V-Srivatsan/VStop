@@ -32,31 +32,58 @@ V-Stop takes a different approach:
 ## Features
 
 ### Attendance Tracking
-See your per-course attendance at a glance. Clean, color-coded, and always up to date with your last sync.
+Per-course attendance at a glance, color-coded by proximity to your configured safety threshold. See exactly how many classes you can skip before dropping below — or how many consecutive classes you need to attend to recover.
 
 ### Marks Dashboard
-Your CAT1, CAT2, assignments, and finals — all in one place. Each course card shows your score alongside the anonymous class average, so you have context without compromising anyone's privacy.
+Your CAT1, CAT2, assignments, and finals in one place. Each course card shows your score alongside the anonymous class average, so you know where you stand without compromising anyone's privacy. Supports both standard and ACE grading systems, with grade estimation for ongoing courses.
 
 ### Timetable
-A clean day-by-day view of your schedule with a live time indicator. See what's now, what's next, and which slots are free — without logging into anything.
+A day-by-day view of your schedule with a live time indicator. Adaptive — automatically shows no classes on holidays, adjusts for extra instructional days, and reflects your actual exam schedule when applicable.
+
+### Academic Calendar
+Instructional days, holidays, and exam dates in one unified calendar. Syncs the current semester automatically and overlays your pending assignments on top — so deadlines and academic events live in the same place.
+
+### Assignments
+Manually track your assignments with titles, descriptions, and deadlines. Pending and submitted assignments are separated into tabs, sorted by deadline. Deadlines are integrated into the academic calendar so nothing gets buried.
+
+### Curriculum
+Your full course catalogue organised by basket, with credit tracking. Completed courses show their received grade. Supports both standard and ACE grading structures.
+
+### OD Hours
+Track your on-duty hours against your semester limit at a glance.
 
 ### Smart Sync
-Three sync modes built for how students actually use the app:
+Four sync modes built for how students actually use the app:
 
 | Mode | What it does |
 |---|---|
-| **Full sync** | Scrapes everything — attendance, marks, timetable — across all semesters |
-| **Attendance only** | Just your attendance data, done fast |
-| **Marks only** | Just your marks, done fast |
+| **Full sync** | Scrapes attendance, marks, timetable, calendar and exam schedule |
+| **Attendance only** | Just your attendance data for the currently selected semester |
+| **Marks only** | Just your marks of the current semester, and your complete grade history |
+| **Calendar only** | The academic calendar of the current semester, along with the exam schedules |
 
-Attendance-only and marks-only syncs are the most-used modes — so they're treated as first-class, heavily optimized operations, not afterthoughts.
+Attendance-only and marks-only syncs are the most-used modes — treated as first-class, heavily optimised operations, not afterthoughts.
+
+### Notifications
+Timely reminders that respect your schedule:
+
+| Type | When |
+|---|---|
+| **Classes** | 10 minutes before start |
+| **Exams** | 30 minutes before start |
+| **Assignments** | 1 hour, 30 minutes, and 10 minutes before deadline |
+
+Each notification type can be individually enabled or disabled from the profile section.
+
+### Theming
+Fully custom Material 3 design system with light, dark, and AMOLED themes. The AMOLED theme is true black — built for OLED screens where it matters.
 
 ---
 
 ## Coming Soon
 
 - FFCS planner with clash detection
-- Skip predictor (how many classes you can safely miss)
+- Laundry, Mess and Bus Schedules
 - Widget support (attendance/next class on home screen)
 - Biometric app lock
 
@@ -73,13 +100,14 @@ V-Stop is built with privacy as a constraint, not an afterthought.
 | Your marks | Stored locally. A one-way anonymous hash of your unique identifiers is used as a Firebase identifier |
 | Class average data | Aggregated anonymously in Firebase. No reg number, no name — just numbers |
 
-The anonymous hash is generated on-device and is not reversible. No one — including the developer — can link a Firebase entry back to a student.
+The anonymous hash is generated and salted on-device and is not reversible. No one — including the developer — can link a Firebase entry back to a student.
 
 ---
 
 ## Installation
 
-V-Stop is a hobby project. There is no planneed Play Store or App Store listing yet.
+V-Stop is currently in early access, distributed as a sideload APK. 
+There is no Play Store listing planned at this time.
 
 **Android (sideload APK):**
 
