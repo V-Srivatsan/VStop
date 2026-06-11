@@ -45,7 +45,7 @@ Future<bool> syncData(int Function(int, String) update, bool partial) async {
   requests.add(AcademicCalendar.fetchExamSchedule(sems.first.code));
 
   await Future.wait(requests);
-  await scheduleDailyNotifications(true);
+  await scheduleNotifications();
   update(100, "");
   return true;
 }
