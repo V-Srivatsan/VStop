@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:vstop/lib/data/assignments.dart' show Assignment;
+import 'package:vstop/lib/db.dart' show Assignment;
 
 class AssignmentTile extends StatelessWidget {
   final Assignment assignment;

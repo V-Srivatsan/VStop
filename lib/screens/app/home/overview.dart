@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vstop/lib/store.dart';
-import 'package:vstop/lib/data/sem.dart';
-import 'package:vstop/lib/data/timetable.dart';
+import 'package:vstop/lib/db.dart';
 import 'timetable/logic.dart' show ScheduleClass;
 
 import 'package:vstop/screens/app/index.dart' as app;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:vstop/lib/data/calendar.dart';
-import 'package:vstop/lib/data/assignments.dart';
+import 'package:vstop/lib/db.dart';
 import 'package:vstop/lib/store.dart';
 
 import 'calendar.dart';

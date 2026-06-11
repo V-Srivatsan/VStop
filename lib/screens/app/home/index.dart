@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:vstop/lib/store.dart';
-import 'package:vstop/lib/data/sem.dart';
-import 'package:vstop/lib/data/timetable.dart';
+import 'package:vstop/lib/db.dart';
 
 import 'package:vstop/screens/app/profile/screens/calendar/index.dart' as calendar;
 

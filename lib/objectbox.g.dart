@@ -14,12 +14,12 @@ import 'package:objectbox/internal.dart'
 import 'package:objectbox/objectbox.dart' as obx;
 import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
-import 'lib/data/assignments.dart';
-import 'lib/data/calendar.dart';
-import 'lib/data/course.dart';
-import 'lib/data/marks.dart';
-import 'lib/data/sem.dart';
-import 'lib/data/timetable.dart';
+import 'lib/data/local/assignments.dart';
+import 'lib/data/scraped/calendar.dart';
+import 'lib/data/scraped/course.dart';
+import 'lib/data/scraped/marks.dart';
+import 'lib/data/scraped/sem.dart';
+import 'lib/data/scraped/timetable.dart';
 
 export 'package:objectbox/objectbox.dart'; // so that callers only have to import this file
 

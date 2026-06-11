@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:vstop/lib/data/index.dart';
+import 'package:vstop/lib/db.dart';
 import 'package:awesome_notifications/awesome_notifications.dart' show AwesomeNotifications;
 import 'package:vstop/lib/notification.dart';
 import 'package:vstop/lib/store.dart';

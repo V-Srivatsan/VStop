@@ -4,7 +4,7 @@ import 'package:universal_html/parsing.dart';
 import 'package:vstop/objectbox.g.dart';
 
 import 'package:vstop/lib/webview.dart';
-import 'index.dart';
+import 'package:vstop/lib/db.dart';
 import 'sem.dart';
 
 enum CalendarEntryType { holiday, exam, instructional }

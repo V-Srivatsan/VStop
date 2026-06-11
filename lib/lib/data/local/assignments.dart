@@ -1,7 +1,6 @@
 import 'package:objectbox/objectbox.dart';
 import 'package:vstop/objectbox.g.dart';
-import 'index.dart';
-import 'sem.dart';
+import 'package:vstop/lib/db.dart';
 
 @Entity()
 class Assignment {
