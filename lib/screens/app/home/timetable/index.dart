@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vstop/lib/data/timetable.dart';
+import 'package:vstop/lib/db.dart';
 import 'package:vstop/lib/store.dart';
 import 'schedule.dart';
 

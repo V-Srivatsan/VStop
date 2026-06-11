@@ -1,16 +1,12 @@
 import 'dart:math';
 import 'package:universal_html/parsing.dart' show parseHtmlDocument;
 import 'package:universal_html/universal_html.dart';
-import 'package:vstop/lib/data/course.dart';
 import 'package:vstop/lib/webview.dart';
 import 'package:vstop/lib/store.dart';
 
 import 'package:objectbox/objectbox.dart';
 import 'package:vstop/objectbox.g.dart';
-import 'index.dart';
-import 'sem.dart';
-import 'timetable.dart';
-import 'firestore.dart';
+import 'package:vstop/lib/db.dart';
 
 @Entity()
 class Mark {

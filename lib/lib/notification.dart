@@ -1,10 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:workmanager/workmanager.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:vstop/lib/data/index.dart';
-import 'package:vstop/lib/data/calendar.dart';
-import 'package:vstop/lib/data/timetable.dart';
+import 'db.dart';
 import 'package:vstop/lib/store.dart';
 import 'package:vstop/screens/app/home/timetable/logic.dart' show getSchedule;
 
@@ -48,7 +44,7 @@ class NotificationController {
       title: title, body: body
     ),
     schedule: schedule == null ? null : NotificationCalendar(
-      allowWhileIdle: true, preciseAlarm: false,
+      allowWhileIdle: true, preciseAlarm: true,
       year: schedule.year, month: schedule.month, day: schedule.day,
       hour: schedule.hour, minute: schedule.minute
     )
@@ -61,70 +57,48 @@ class NotificationController {
     await Future.wait(channels.map((channel) => _instance.cancelSchedulesByChannelKey(channel)));
 }
 
-Future<void> scheduleDailyNotifications([bool exec = false]) async {
+Future<void> scheduleNotifications() async {
+  final sem = await PrefStore.getSem();
+  await NotificationController.cancelNotifications([
+    NotificationController.CLASS_REMINDER_CHANNEL,
+    NotificationController.EXAM_REMINDER_CHANNEL
+  ]);
+
+  String formatTime(Duration d) =>
+      "${d.inHours.toString().padLeft(2, '0')}:${d.inMinutes.remainder(60).toString().padLeft(2, '0')}";
+
   final now = DateTime.now();
-  Workmanager().registerOneOffTask(
-    existingWorkPolicy: .replace,
-    'notification_scheduling', 'notification_scheduling',
-    initialDelay: exec ? null : Duration(microseconds: (
-        Duration(hours: 24, seconds: 10).inMicroseconds -
-        Duration(hours: now.hour, minutes: now.minute, seconds: now.second).inMicroseconds
-    ))
-  );
-}
+  final start = DateFormat('yyyyMMdd').format(now), end = DateFormat('yyyyMMdd').format(now.add(Duration(days: 7)));
 
-@pragma('vm:entry-point')
-void scheduleWork() async {
-  Workmanager().executeTask((task, data) async {
-    try {
-      WidgetsFlutterBinding.ensureInitialized();
-      await NotificationController.initialize();
-      await Database.init();
+  List<CalendarEntry> entries = [];
+  List<ExamEntry> exams = [];
+  for (var e in AcademicCalendar.getEntries(sem))
+    if (e.date.compareTo(start) >= 0 && e.date.compareTo(end) <= 0)
+      entries.add(e);
 
-      final sem = await PrefStore.getSem();
-      await NotificationController.cancelNotifications([
-        NotificationController.CLASS_REMINDER_CHANNEL,
-        NotificationController.EXAM_REMINDER_CHANNEL
-      ]);
+  for (var e in AcademicCalendar.getSchedule())
+    if (e.date.compareTo(start) >= 0 && e.date.compareTo(end) <= 0)
+      exams.add(e);
 
-      String formatTime(Duration d) =>
-          "${d.inHours.toString().padLeft(2, '0')}:${d.inMinutes.remainder(60).toString().padLeft(2, '0')}";
+  final courses = Timetable(sem).getCourses();
+  for (var entry in entries)
+    for (var slot in entry.weekday != null ? getSchedule(courses, entry.weekday!) : [])
+      NotificationController.showNotification(
+        id: 'class_${entry.date}_${slot.start}',
+        channel: NotificationController.CLASS_REMINDER_CHANNEL,
+        title: 'Next Class: ${slot.entry.course.target!.name}',
+        body: '${formatTime(slot.start)} - ${formatTime(slot.end)}',
+        schedule: .parse(entry.date).add(slot.start - Duration(minutes: 15))
+      );
 
-      final today = DateFormat("yyyyMMdd").format(.now());
-      CalendarEntry? entry;
-      List<ExamEntry> exams = [];
-      for (var e in AcademicCalendar.getEntries(sem))
-        if (e.date.compareTo(today) == 0) { entry = e; break; }
-
-      for (var e in AcademicCalendar.getSchedule())
-        if (e.date.compareTo(today) == 0) exams.add(e);
-
-      final courses = Timetable(sem).getCourses();
-      if (entry != null && entry.weekday != null)
-        for (var slot in getSchedule(courses, entry.weekday!))
-          NotificationController.showNotification(
-            id: 'class_${slot.start}',
-            channel: NotificationController.CLASS_REMINDER_CHANNEL,
-            title: 'Next Class: ${slot.entry.course.target!.name}',
-            body: '${formatTime(slot.start)} - ${formatTime(slot.end)}',
-            schedule: DateFormat('yyyyMMdd HH:mm').parse('$today ${formatTime(slot.start - Duration(minutes: 15))}')
-          );
-
-      for (var exam in exams)
-        NotificationController.showNotification(
-            id: 'exam_${exam.id}',
-            channel: NotificationController.EXAM_REMINDER_CHANNEL,
-            schedule: DateFormat("yyyyMMdd HH:mm").parse(
-                "${exam.date} ${exam.from}").subtract(Duration(minutes: 30)),
-            title: 'Upcoming Exam: ${exam.course}',
-            body: '${exam.venue}, ${exam.seatNo} (${exam.seatLoc})'
-        );
-
-      await scheduleDailyNotifications(); Database.close();
-      return true;
-    } catch (e) {
-      print("Error scheduling notifications: $e");
-      return false;
-    }
-  });
+  for (var exam in exams) {
+    final parts = exam.from.split(":").map(int.parse).toList();
+    NotificationController.showNotification(
+      id: 'exam_${exam.id}',
+      channel: NotificationController.EXAM_REMINDER_CHANNEL,
+      schedule: .parse(exam.date).add(Duration(hours: parts[0], minutes: parts[1]) - Duration(minutes: 60)),
+      title: 'Upcoming Exam: ${exam.course}',
+      body: '${exam.venue}, ${exam.seatNo} (${exam.seatLoc})'
+    );
+  }
 }

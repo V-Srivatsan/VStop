@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vstop/lib/data/assignments.dart';
+import 'package:vstop/lib/db.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 

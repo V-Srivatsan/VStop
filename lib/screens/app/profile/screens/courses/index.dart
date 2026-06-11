@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vstop/lib/data/course.dart';
+import 'package:vstop/lib/db.dart';
 
 import 'course_list.dart';
 
