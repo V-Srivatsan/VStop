@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vstop/lib/consts.dart';
-import 'package:vstop/screens/app/profile/screens/courses/course_list.dart' show SearchableList;
 import 'package:vstop/lib/db.dart';
+import 'package:vstop/widgets/searchable_list.dart';
 
 class CourseList extends StatefulWidget {
   final void Function(Map<String, List<FFCSCourse>>) update;
@@ -53,11 +53,16 @@ class _CourseListState extends State<CourseList> {
                   padding: .fromLTRB(20, 0, 20, insets.bottom + 10),
                   child: CustomScrollView(slivers: [
                     SearchableList(
-                      courses.where((c) => options[c] == null).toList(),
-                      onTap: (course) {
-                        setState(() => options[course] = []);
-                        Navigator.of(ctx).pop();
-                      }
+                      items: courses.where((c) => options[c] == null).toList(), hintText: "Search Courses",
+                      searchKey: (course) => course.name.toLowerCase(),
+                      itemBuilder: (course) => Card(child: ListTile(
+                        title: Text(course.name),
+                        subtitle: Text(course.code),
+                        onTap: () {
+                          setState(() => options[course] = []);
+                          Navigator.of(ctx).pop();
+                        }
+                      )),
                     )
                   ]),
                 ));
