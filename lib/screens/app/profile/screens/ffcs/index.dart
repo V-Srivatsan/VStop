@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vstop/screens/app/profile/screens/ffcs/drafts.dart';
-
+import 'drafts.dart';
 import 'planner/index.dart';
 
 class Screen extends StatelessWidget {
@@ -10,10 +9,9 @@ class Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("FFCS Planner")),
-      body: DefaultTabController(length: 3, child: Column(
+      body: DefaultTabController(length: 2, child: Column(
         children: [
-          TabBar(tabs: [ Tab(text: "Drafts"), Tab(text: "Planner"), Tab(text: "Reviews") ]),
-
+          TabBar(tabs: [ Tab(text: "Drafts"), Tab(text: "Planner") ]),
           Expanded(child: Padding(
             padding: .symmetric(vertical: 10),
             child: TabBarView(
@@ -21,7 +19,6 @@ class Screen extends StatelessWidget {
               children: [
                 Drafts(),
                 Padding(padding: .symmetric(horizontal: 20), child: Planner()),
-                Center(child: Text("Coming soon..."))
               ]
             )
           ))
