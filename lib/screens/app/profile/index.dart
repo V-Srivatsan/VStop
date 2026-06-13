@@ -3,6 +3,7 @@ import 'logic.dart' as logic;
 
 import 'screens/calendar/index.dart' as calendar;
 import 'screens/courses/index.dart' as courses;
+import 'screens/ffcs/index.dart' as ffcs;
 import 'screens/privacy.dart' as privacy;
 
 class Screen extends StatelessWidget {
@@ -24,6 +25,11 @@ class Screen extends StatelessWidget {
               ListTile(
                 title: Text("My Courses"), leading: Icon(Icons.book_outlined),
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => courses.Screen())),
+              ),
+              Divider(),
+              ListTile(
+                title: Text("FFCS Planner"), leading: Icon(Icons.bookmark_outline),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ffcs.Screen()))
               )
             ]),
 
