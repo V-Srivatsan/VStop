@@ -26,7 +26,7 @@ void syncMarks(
 
 Widget getMarkTile(BuildContext ctx, {
   required Course course, required List<TimetableEntry> entries,
-  required bool predict, required bool aceGrading
+  required bool predict, required bool weighted, required bool aceGrading
 }) {
   List<Widget> children = [];
 
@@ -40,7 +40,11 @@ Widget getMarkTile(BuildContext ctx, {
           style: Theme.of(ctx).textTheme.titleSmall,
         ),
 
-        ...(e.marks.map((mark) => MarkTile(name: mark.title, score: mark.score, maxScore: mark.maxScore)).toList())
+        ...(e.marks.map((mark) => MarkTile(
+            name: mark.title,
+            score: weighted ? mark.score : mark.mark,
+            maxScore: weighted ? mark.maxScore : mark.maxMark)
+        ).toList())
       ],
     ));
   }
@@ -51,17 +55,20 @@ Widget getMarkTile(BuildContext ctx, {
     grade: predict || grade == null ? grade : grade.startsWith('*') ? null : grade,
     onTap: score.$2 == 0 ? null : () => showModalBottomSheet(
         context: ctx,
-        builder: (_) => Container(
-          padding: .symmetric(horizontal: 20, vertical: 10),
-          child: SingleChildScrollView(child: Column(
-            mainAxisSize: .min, crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 10,
-            children: [
-              Text(course.name, style: Theme.of(ctx).textTheme.titleLarge),
-              Column(mainAxisSize: .min, children: children)
-            ],
-          )),
-        )
+        builder: (_) {
+
+          return Container(
+            padding: .symmetric(horizontal: 20, vertical: 10),
+            child: SingleChildScrollView(child: Column(
+              mainAxisSize: .min, crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 10,
+              children: [
+                Text(course.name, style: Theme.of(ctx).textTheme.titleLarge),
+                Column(mainAxisSize: .min, children: children)
+              ],
+            )),
+          );
+        }
     ),
   );
 }

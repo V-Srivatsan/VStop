@@ -13,8 +13,9 @@ class Mark {
   int id;
   var entry = ToOne<TimetableEntry>();
   String title; double score, maxScore;
+  double mark, maxMark;
 
-  Mark({ this.id = 0, required this.title, required this.score, required this.maxScore });
+  Mark({ this.id = 0, required this.title, required this.score, required this.maxScore, required this.mark, required this.maxMark });
 }
 
 class MarkStore {
@@ -60,10 +61,12 @@ class MarkStore {
         final marks = tables[i].querySelectorAll("tr.tableContent-level1");
         for (var mark in marks) {
           final title = mark.children[1].text!.trim();
+          final maxMark = double.parse(mark.children[2].innerText.trim());
           final maxScore = double.parse(mark.children[3].text!.trim());
+          final m = double.parse(mark.children[5].innerText.trim());
           final score = double.parse(mark.children[6].text!.trim());
 
-          Mark r = Mark(title: title, maxScore: maxScore, score: score);
+          Mark r = Mark(title: title, maxScore: maxScore, score: score, mark: m, maxMark: maxMark);
           r.entry.target = entry;
           all_marks.add(r);
         }

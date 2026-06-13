@@ -16,7 +16,8 @@ class Screen extends StatefulWidget {
 class _ScreenState extends State<Screen> {
 
   List<MapEntry<Course, List<TimetableEntry>>> entries = [];
-  bool syncing = false, predict = false, aceGrading = false; String sem = "";
+  bool syncing = false, predict = false, weighted = false, aceGrading = false;
+  String sem = "";
 
   @override
   void initState() {
@@ -81,6 +82,12 @@ class _ScreenState extends State<Screen> {
               ],
             ),
 
+            Card(child: ListTile(
+              title: Text("Show Weighted Marks"),
+              onTap: () => setState(() => weighted = !weighted),
+              trailing: Switch(value: weighted, onChanged: (val) => setState(() => weighted = val)),
+            )),
+
             SizedBox(height: 10)
 
           ],
@@ -91,7 +98,7 @@ class _ScreenState extends State<Screen> {
           itemBuilder: (context, index) =>
             logic.getMarkTile(context,
                 course: entries[index].key, entries: entries[index].value,
-                predict: predict, aceGrading: aceGrading
+                predict: predict, weighted: weighted, aceGrading: aceGrading
             )
         )
 

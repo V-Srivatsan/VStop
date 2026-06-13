@@ -230,7 +230,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(5, 8359651986574788630),
     name: 'Mark',
-    lastPropertyId: const obx_int.IdUid(5, 3778868705849972652),
+    lastPropertyId: const obx_int.IdUid(7, 5480601534870910557),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -263,6 +263,18 @@ final _entities = <obx_int.ModelEntity>[
       obx_int.ModelProperty(
         id: const obx_int.IdUid(5, 3778868705849972652),
         name: 'maxScore',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(6, 442952159189524805),
+        name: 'mark',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(7, 5480601534870910557),
+        name: 'maxMark',
         type: 8,
         flags: 0,
       ),
@@ -540,11 +552,11 @@ obx_int.ModelDefinition getObjectBoxModel() {
     // Typically, this is done with `dart run build_runner build`.
     generatorVersion: obx_int.GeneratorVersion.v2025_12_16,
     entities: _entities,
-    lastEntityId: const obx_int.IdUid(11, 5985315849386685571),
+    lastEntityId: const obx_int.IdUid(12, 3622114622570360959),
     lastIndexId: const obx_int.IdUid(13, 1552415668056798070),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
-    retiredEntityUids: const [6117339244360381770],
+    retiredEntityUids: const [6117339244360381770, 3622114622570360959],
     retiredIndexUids: const [3191994156590455572, 1552415668056798070],
     retiredPropertyUids: const [
       3594803508846366057,
@@ -555,6 +567,15 @@ obx_int.ModelDefinition getObjectBoxModel() {
       5791292606650345061,
       3983228616316491681,
       1532407042799090196,
+      6542218225891475384,
+      1848397570724303708,
+      4911036802165461435,
+      4745376432541177531,
+      5785590222889771229,
+      839198604203573372,
+      5639002336469439361,
+      183242412434498403,
+      6606655339044807459,
     ],
     retiredRelationUids: const [],
     modelVersion: 5,
@@ -859,12 +880,14 @@ obx_int.ModelDefinition getObjectBoxModel() {
       },
       objectToFB: (Mark object, fb.Builder fbb) {
         final titleOffset = fbb.writeString(object.title);
-        fbb.startTable(6);
+        fbb.startTable(8);
         fbb.addInt64(0, object.id);
         fbb.addInt64(1, object.entry.targetId);
         fbb.addOffset(2, titleOffset);
         fbb.addFloat64(3, object.score);
         fbb.addFloat64(4, object.maxScore);
+        fbb.addFloat64(5, object.mark);
+        fbb.addFloat64(6, object.maxMark);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -892,11 +915,25 @@ obx_int.ModelDefinition getObjectBoxModel() {
           12,
           0,
         );
+        final markParam = const fb.Float64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          14,
+          0,
+        );
+        final maxMarkParam = const fb.Float64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          16,
+          0,
+        );
         final object = Mark(
           id: idParam,
           title: titleParam,
           score: scoreParam,
           maxScore: maxScoreParam,
+          mark: markParam,
+          maxMark: maxMarkParam,
         );
         object.entry.targetId = const fb.Int64Reader().vTableGet(
           buffer,
@@ -1369,6 +1406,14 @@ class Mark_ {
   /// See [Mark.maxScore].
   static final maxScore = obx.QueryDoubleProperty<Mark>(
     _entities[4].properties[4],
+  );
+
+  /// See [Mark.mark].
+  static final mark = obx.QueryDoubleProperty<Mark>(_entities[4].properties[5]);
+
+  /// See [Mark.maxMark].
+  static final maxMark = obx.QueryDoubleProperty<Mark>(
+    _entities[4].properties[6],
   );
 }
 
