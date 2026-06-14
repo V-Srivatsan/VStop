@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:vstop/lib/webview.dart';
 import 'package:vstop/lib/store.dart' show SecureStorage;
+import 'cnn.dart';
 
 Future<Uint8List?> getCaptcha() async {
   final src = (await WebView.controller!.evaluateJavascript(
@@ -15,6 +16,13 @@ Future<Uint8List?> getCaptcha() async {
   final padded = normalized.padRight(normalized.length + (4 - normalized.length % 4) % 4, '=');
   return base64Decode(padded);
 }
+
+Future<String> getCaptchaStr(Uint8List bytes) async {
+  await CaptchaDecoder.init();
+  return await CaptchaDecoder.decode(bytes);
+}
+
+void free() => CaptchaDecoder.close();
 
 Future<String?> getLoginError() async {
   final error = (await WebView.controller!.evaluateJavascript(

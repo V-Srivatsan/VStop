@@ -49,10 +49,23 @@ class _LoginFormState extends State<LoginForm> {
       }
 
       captcha = await logic.getCaptcha();
+      if (captcha != null) {
+        final captchaStr = await logic.getCaptchaStr(captcha!);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _key.currentState!.patchValue({'captcha': captchaStr});
+          print("DEBUG: $captchaStr");
+        });
+      }
       if (url == WebView.loginErrorUrl) error = await logic.getLoginError();
 
       if (mounted) setState(() { loading = false; });
     });
+  }
+
+  @override
+  void dispose() {
+    logic.free();
+    super.dispose();
   }
 
   @override
