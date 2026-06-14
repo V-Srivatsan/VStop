@@ -69,13 +69,13 @@ Widget getMarkTile(BuildContext ctx, {
   );
 }
 
-double getGPA(List<MapEntry<Course, List<TimetableEntry>>> entries) {
+double getGPA(List<MapEntry<Course, List<TimetableEntry>>> entries, bool predict) {
   double points = 0, credits = 0;
 
   for (var entry in entries) {
     final grade = entry.value.first.grade;
-    if (grade == null || grade.startsWith('*')) continue;
-    final gp = getGradePoint(entry.value.first.grade);
+    if (grade == null || (!predict && grade.startsWith('*'))) continue;
+    final gp = getGradePoint(grade.length == 1 ? grade : grade.substring(1));
     if (gp == null) continue;
     credits += entry.key.credits;
     points += entry.key.credits * gp;
