@@ -26,7 +26,7 @@ void syncMarks(
 
 Widget getMarkTile(BuildContext ctx, {
   required Course course, required List<TimetableEntry> entries,
-  required bool predict, required bool weighted, required bool aceGrading
+  required bool predict, required bool aceGrading
 }) {
   List<Widget> children = [];
 
@@ -40,18 +40,14 @@ Widget getMarkTile(BuildContext ctx, {
           style: Theme.of(ctx).textTheme.titleSmall,
         ),
 
-        ...(e.marks.map((mark) => MarkTile(
-            name: mark.title,
-            score: weighted ? mark.score : mark.mark,
-            maxScore: weighted ? mark.maxScore : mark.maxMark)
-        ).toList())
+        ...(e.marks.map((mark) => MarkTile(mark)).toList())
       ],
     ));
   }
 
   final grade = entries.first.grade; final score = course.getScore(entries, aceGrading);
   return MarkTile(
-    name: course.name, score: score.$1, maxScore: score.$2,
+    Mark(title: course.name, mark: score.$1, maxMark: score.$2, score: score.$1, maxScore: score.$2),
     grade: predict || grade == null ? grade : grade.startsWith('*') ? null : grade,
     onTap: score.$2 == 0 ? null : () => showModalBottomSheet(
         context: ctx,

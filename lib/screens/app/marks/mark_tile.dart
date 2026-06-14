@@ -1,27 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:vstop/lib/db.dart' show Mark;
 
-class MarkTile extends StatelessWidget {
-  final String name; final double score; final double maxScore;
+class MarkTile extends StatefulWidget {
+  final Mark mark;
   final String? grade; final void Function()? onTap;
-  const MarkTile({
-    super.key, required this.name, required this.score, required this.maxScore,
-    this.grade, this.onTap
-  });
+  const MarkTile(this.mark, { super.key, this.grade, this.onTap });
+
+  @override
+  State<MarkTile> createState() => _MarkTileState();
+}
+
+class _MarkTileState extends State<MarkTile> {
+  bool weighted = false;
 
   @override
   Widget build(BuildContext context) {
-
     final isDark = Theme.of(context).brightness == .dark;
-    final isEst = grade != null && grade!.length == 2;
+    final isEst = widget.grade != null && widget.grade!.length == 2;
 
     return Card(child: ListTile(
-      title: Text(name), onTap: onTap,
-      subtitle: grade == null ? null : Text("Grade${isEst ? ' (est)' : ''}: ${isEst ? grade![1] : grade}"),
-      trailing: maxScore == 0 ? null : Stack(
+      title: Text(widget.mark.title), onTap: widget.onTap ?? () => setState(() => weighted = !weighted),
+      subtitle: widget.grade == null ? null : Text("Grade${isEst ? ' (est)' : ''}: ${isEst ? widget.grade![1] : widget.grade}"),
+      trailing: widget.mark.maxScore == 0 ? null : Stack(
         alignment: .center,
         children: [
           CircularProgressIndicator(
-            value: score/maxScore,
+            value: widget.mark.score/widget.mark.maxScore,
             constraints: .tight(Size(50, 50)),
           ),
           SizedBox(
@@ -29,9 +33,9 @@ class MarkTile extends StatelessWidget {
             child: Column(
               mainAxisSize: .min, crossAxisAlignment: .center, mainAxisAlignment: .center,
               children: [
-                Text(score.ceil().toString()),
+                Text((weighted ? widget.mark.score : widget.mark.mark).ceil().toString()),
                 Divider(color: isDark ? Colors.white54 : Colors.black12),
-                Text(maxScore.round().toString())
+                Text((weighted ? widget.mark.maxScore : widget.mark.maxMark).ceil().toString())
               ],
             ),
           )
