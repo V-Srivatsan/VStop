@@ -40,6 +40,11 @@ class Screen extends StatelessWidget {
               ),
               Divider(),
               ListTile(
+                title: Text("Auto Sync"), leading: Icon(Icons.flip_camera_android),
+                trailing: PrefSwitch(getValue: logic.getAutoSync, onChanged: (v) => logic.setAutoSync(v, context)),
+              ),
+              Divider(),
+              ListTile(
                 title: Text("Estimate Grades"), leading: Icon(Icons.calculate_outlined),
                 trailing: PrefSwitch(getValue: logic.getEstimateGrades, onChanged: logic.setEstimateGrades),
               ),
@@ -65,13 +70,12 @@ class Screen extends StatelessWidget {
               Divider(),
               ListTile(
                 title: Text("Notification Settings"), leading: Icon(Icons.notifications_outlined),
-                onTap: () => logic.notificationSettings(),
+                onTap: logic.notificationSettings,
               ),
               Divider(),
-              ListTile(
-                title: Text("Share App"), leading: Icon(Icons.share),
-                onTap: () => logic.shareApp(),
-              ),
+              ListTile(title: Text("App Settings"), leading: Icon(Icons.settings), onTap: logic.openSettings),
+              Divider(),
+              ListTile(title: Text("Share App"), leading: Icon(Icons.share), onTap: logic.shareApp),
               Divider(),
               ListTile(
                 title: Text("Privacy Policy"), leading: Icon(Icons.privacy_tip_outlined),
@@ -114,7 +118,7 @@ class Section extends StatelessWidget {
 
 class PrefSwitch extends StatefulWidget {
   final Future<bool> Function() getValue;
-  final Future<void> Function(bool) onChanged;
+  final Future<dynamic> Function(bool) onChanged;
   const PrefSwitch({super.key, required this.getValue, required this.onChanged });
 
   @override
@@ -134,8 +138,8 @@ class _PrefSwitchState extends State<PrefSwitch> {
   @override
   Widget build(BuildContext context) {
     return Switch(value: value, onChanged: (val) async {
-      widget.onChanged(val);
-      setState(() => value = val);
+      final res = await widget.onChanged(val);
+      setState(() => value = res ?? val);
     });
   }
 }

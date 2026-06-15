@@ -39,6 +39,9 @@ class PrefStore {
   }
   static Future<void> setAttThreshold(int val) async => await _store.setInt("attThreshold", val);
 
+  static Future<bool> getBackgroundSync() async => (await _store.getBool("backgroundSync")) ?? false;
+  static Future<void> setBackgroundSync(bool val) async => await _store.setBool("backgroundSync", val);
+
   static ValueNotifier<AppTheme> theme = ValueNotifier<AppTheme>(.system);
   static Future<void> setTheme(AppTheme theme) async {
     switch (theme) {
