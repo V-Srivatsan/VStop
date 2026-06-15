@@ -11,13 +11,13 @@ class Screen extends StatelessWidget {
       appBar: AppBar(title: Text("FFCS Planner")),
       body: DefaultTabController(length: 2, child: Column(
         children: [
-          TabBar(tabs: [ Tab(text: "Drafts"), Tab(text: "Planner") ]),
+          Padding(padding: .symmetric(horizontal: 20), child: TabBar(tabs: [Tab(text: "Drafts"), Tab(text: "Planner")])),
           Expanded(child: Padding(
             padding: .symmetric(vertical: 10),
             child: TabBarView(
               physics: NeverScrollableScrollPhysics(),
               children: [
-                Drafts(),
+                Padding(padding: .symmetric(horizontal: 20), child: Drafts()),
                 Padding(padding: .symmetric(horizontal: 20), child: Planner()),
               ]
             )
