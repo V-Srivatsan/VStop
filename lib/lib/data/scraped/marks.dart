@@ -114,7 +114,7 @@ class MarkStore {
         tasks.add(syncToFirestore(MarkStore(sem.code).getCourseMap()));
     else
       for (var course in data.keys)
-        if (course.grade == null)
+        if (data[course]!.any((e) => e.grade == null))
           tasks.add(() async {
             final grade = await getGrade(course: course, entries: data[course]!, user: auth, aceGrading: aceGrading);
             data[course] = data[course]!.map((e) { e.grade = '*$grade'; return e; }).toList();
