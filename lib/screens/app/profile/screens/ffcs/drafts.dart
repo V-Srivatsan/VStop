@@ -19,7 +19,7 @@ class _DraftsState extends State<Drafts> {
      ListView(children: [
        for (var i=0; i < drafts.length; i++)
          Card(child: ListTile(
-           title: Text("Draft: ${drafts[i].draft!.name}", textAlign: .center),
+           title: Text("Draft: ${drafts[i].draft!.name}"),
            trailing: IconButton(onPressed: () {
              drafts[i].delete();
              setState(() => drafts.removeAt(i));
@@ -31,7 +31,7 @@ class _DraftsState extends State<Drafts> {
                child: Column(
                  mainAxisSize: .min, spacing: 10,
                  children: [
-                   Text(drafts[i].draft!.name, style: Theme.of(context).textTheme.titleLarge),
+                   Text(drafts[i].draft!.name, style: Theme.of(context).textTheme.titleLarge, textAlign: .center),
                    Visualiser(drafts[i]),
                    ConstrainedBox(
                      constraints: .tight(Size(.infinity, 200)),
