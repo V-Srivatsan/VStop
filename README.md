@@ -43,6 +43,9 @@ A day-by-day view of your schedule with a live time indicator. Adaptive — auto
 ### Academic Calendar
 Instructional days, holidays, and exam dates in one unified calendar. Syncs the current semester automatically and overlays your pending assignments on top — so deadlines and academic events live in the same place.
 
+### FFCS Planner
+Plan your registrations before the slot selection window opens. Create multiple drafts, add courses and assign faculties with their slots, and let the planner generate clash-free schedules. Switch between generated schedules and save your preferred one to the draft.
+
 ### Assignments
 Manually track your assignments with titles, descriptions, and deadlines. Pending and submitted assignments are separated into tabs, sorted by deadline. Deadlines are integrated into the academic calendar so nothing gets buried.
 
@@ -53,23 +56,21 @@ Your full course catalogue organised by basket, with credit tracking. Completed 
 Track your on-duty hours against your semester limit at a glance.
 
 ### Smart Sync
-Four sync modes built for how students actually use the app:
 
 | Mode | What it does |
 |---|---|
 | **Full sync** | Scrapes attendance, marks, timetable, calendar and exam schedule |
+| **Auto sync** | Runs a full sync daily in the background for the current semester |
 | **Attendance only** | Just your attendance data for the currently selected semester |
 | **Marks only** | Just your marks of the current semester, and your complete grade history |
 | **Calendar only** | The academic calendar of the current semester, along with the exam schedules |
-
-Attendance-only and marks-only syncs are the most-used modes — treated as first-class, heavily optimised operations, not afterthoughts.
 
 ### Notifications
 Timely reminders that respect your schedule:
 
 | Type | When |
 |---|---|
-| **Classes** | 10 minutes before start |
+| **Classes** | 15 minutes before start |
 | **Exams** | 30 minutes before start |
 | **Assignments** | 1 hour, 30 minutes, and 10 minutes before deadline |
 
@@ -77,15 +78,6 @@ Each notification type can be individually enabled or disabled from the profile 
 
 ### Theming
 Fully custom Material 3 design system with light, dark, and AMOLED themes. The AMOLED theme is true black — built for OLED screens where it matters.
-
----
-
-## Coming Soon
-
-- FFCS planner with clash detection
-- Laundry, Mess and Bus Schedules
-- Widget support (attendance/next class on home screen)
-- Biometric app lock
 
 ---
 
@@ -132,7 +124,7 @@ There is no Play Store listing planned at this time.
 ## Contributing
 
 V-Stop is open source under the MIT license. The codebase is public and you're welcome to read, fork, and learn from it.
-The app is still being actively shaped and the architecture is in flux. That said, feedback and bug reports are genuinely appreciated.
+The project is now in maintenance mode. Bug reports and fixes are welcome.
 
 ---
 
