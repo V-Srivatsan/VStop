@@ -1,6 +1,6 @@
 import 'package:vstop/lib/db.dart';
 import 'package:vstop/lib/store.dart';
-import 'package:vstop/lib/notification.dart';
+import 'package:vstop/lib/worker.dart';
 
 Future<bool> syncData(int Function(int, String) update, bool partial) async {
   Database.clear(!partial);
@@ -28,7 +28,9 @@ Future<bool> syncData(int Function(int, String) update, bool partial) async {
     for (var sem in sems) {
       final timetable = Timetable(sem.code);
       p = update(p+sem_update, "Listing your studies in ${sem.name}...");
-      await timetable.fetch(); await timetable.fetchAttendance();
+      await timetable.fetch();
+      update(p, "Evaluating survival rate in ${sem.name}...");
+      await timetable.fetchAttendance();
     }
 
     p = update(70, "");
@@ -45,7 +47,7 @@ Future<bool> syncData(int Function(int, String) update, bool partial) async {
   requests.add(AcademicCalendar.fetchExamSchedule(sems.first.code));
 
   await Future.wait(requests);
-  await scheduleNotifications();
+  executeTask(SCHEDULE_NOTIFICATIONS_TASK);
   update(100, "");
   return true;
 }
