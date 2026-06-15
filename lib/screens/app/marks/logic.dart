@@ -40,39 +40,42 @@ Widget getMarkTile(BuildContext ctx, {
           style: Theme.of(ctx).textTheme.titleSmall,
         ),
 
-        ...(e.marks.map((mark) => MarkTile(name: mark.title, score: mark.score, maxScore: mark.maxScore)).toList())
+        ...(e.marks.map((mark) => MarkTile(mark)).toList())
       ],
     ));
   }
 
   final grade = entries.first.grade; final score = course.getScore(entries, aceGrading);
   return MarkTile(
-    name: course.name, score: score.$1, maxScore: score.$2,
+    Mark(title: course.name, mark: score.$1, maxMark: score.$2, score: score.$1, maxScore: score.$2),
     grade: predict || grade == null ? grade : grade.startsWith('*') ? null : grade,
     onTap: score.$2 == 0 ? null : () => showModalBottomSheet(
         context: ctx,
-        builder: (_) => Container(
-          padding: .symmetric(horizontal: 20, vertical: 10),
-          child: SingleChildScrollView(child: Column(
-            mainAxisSize: .min, crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 10,
-            children: [
-              Text(course.name, style: Theme.of(ctx).textTheme.titleLarge),
-              Column(mainAxisSize: .min, children: children)
-            ],
-          )),
-        )
+        builder: (_) {
+
+          return Container(
+            padding: .symmetric(horizontal: 20, vertical: 10),
+            child: SingleChildScrollView(child: Column(
+              mainAxisSize: .min, crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 10,
+              children: [
+                Text(course.name, style: Theme.of(ctx).textTheme.titleLarge),
+                Column(mainAxisSize: .min, children: children)
+              ],
+            )),
+          );
+        }
     ),
   );
 }
 
-double getGPA(List<MapEntry<Course, List<TimetableEntry>>> entries) {
+double getGPA(List<MapEntry<Course, List<TimetableEntry>>> entries, bool predict) {
   double points = 0, credits = 0;
 
   for (var entry in entries) {
     final grade = entry.value.first.grade;
-    if (grade == null || grade.startsWith('*')) continue;
-    final gp = getGradePoint(entry.value.first.grade);
+    if (grade == null || (!predict && grade.startsWith('*'))) continue;
+    final gp = getGradePoint(grade.length == 1 ? grade : grade.substring(1));
     if (gp == null) continue;
     credits += entry.key.credits;
     points += entry.key.credits * gp;

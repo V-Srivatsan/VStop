@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:workmanager/workmanager.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -9,6 +10,7 @@ import 'lib/store.dart';
 import 'lib/db.dart';
 import 'lib/fcm.dart';
 import 'lib/notification.dart';
+import 'lib/worker.dart';
 
 import 'theme.dart' as theme;
 import 'screens/splash/index.dart' as splash;
@@ -21,7 +23,7 @@ void main() async {
 
   FirebaseMessaging.onBackgroundMessage(FCMBackground);
   await NotificationController.initialize();
-  scheduleNotifications();
+  Workmanager().initialize(callbackDispatcher);
 
   runApp(ValueListenableBuilder<AppTheme>(
     valueListenable: PrefStore.theme,

@@ -3,6 +3,7 @@ import 'logic.dart' as logic;
 
 import 'screens/calendar/index.dart' as calendar;
 import 'screens/courses/index.dart' as courses;
+import 'screens/ffcs/index.dart' as ffcs;
 import 'screens/privacy.dart' as privacy;
 
 class Screen extends StatelessWidget {
@@ -24,6 +25,11 @@ class Screen extends StatelessWidget {
               ListTile(
                 title: Text("My Courses"), leading: Icon(Icons.book_outlined),
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => courses.Screen())),
+              ),
+              Divider(),
+              ListTile(
+                title: Text("FFCS Planner"), leading: Icon(Icons.bookmark_outline),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ffcs.Screen()))
               )
             ]),
 
@@ -31,6 +37,11 @@ class Screen extends StatelessWidget {
               ListTile(
                 title: Text("Sync Data"), leading: Icon(Icons.sync),
                 onTap: () => logic.syncData(context),
+              ),
+              Divider(),
+              ListTile(
+                title: Text("Auto Sync"), leading: Icon(Icons.flip_camera_android),
+                trailing: PrefSwitch(getValue: logic.getAutoSync, onChanged: (v) => logic.setAutoSync(v, context)),
               ),
               Divider(),
               ListTile(
@@ -59,13 +70,12 @@ class Screen extends StatelessWidget {
               Divider(),
               ListTile(
                 title: Text("Notification Settings"), leading: Icon(Icons.notifications_outlined),
-                onTap: () => logic.notificationSettings(),
+                onTap: logic.notificationSettings,
               ),
               Divider(),
-              ListTile(
-                title: Text("Share App"), leading: Icon(Icons.share),
-                onTap: () => logic.shareApp(),
-              ),
+              ListTile(title: Text("App Settings"), leading: Icon(Icons.settings), onTap: logic.openSettings),
+              Divider(),
+              ListTile(title: Text("Share App"), leading: Icon(Icons.share), onTap: logic.shareApp),
               Divider(),
               ListTile(
                 title: Text("Privacy Policy"), leading: Icon(Icons.privacy_tip_outlined),
@@ -108,7 +118,7 @@ class Section extends StatelessWidget {
 
 class PrefSwitch extends StatefulWidget {
   final Future<bool> Function() getValue;
-  final Future<void> Function(bool) onChanged;
+  final Future<dynamic> Function(bool) onChanged;
   const PrefSwitch({super.key, required this.getValue, required this.onChanged });
 
   @override
@@ -128,8 +138,8 @@ class _PrefSwitchState extends State<PrefSwitch> {
   @override
   Widget build(BuildContext context) {
     return Switch(value: value, onChanged: (val) async {
-      widget.onChanged(val);
-      setState(() => value = val);
+      final res = await widget.onChanged(val);
+      setState(() => value = res ?? val);
     });
   }
 }

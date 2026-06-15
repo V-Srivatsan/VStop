@@ -63,9 +63,11 @@ class _ScreenState extends State<Screen> {
               children: [
 
                 DisplayCard(
-                  label: "GPA", color: Theme.of(context).colorScheme.primary,
+                  label: predict && entries.any((e) =>
+                    e.value.any((e) => e.grade?.contains('*') ?? false)
+                  ) ? 'GPA (est)' : "GPA", color: Theme.of(context).colorScheme.primary,
                   child: Text(
-                    logic.getGPA(entries).toStringAsFixed(2),
+                    logic.getGPA(entries, predict).toStringAsFixed(2),
                     style: Theme.of(context).textTheme.headlineSmall,
                   )
                 ),
@@ -90,8 +92,8 @@ class _ScreenState extends State<Screen> {
           itemCount: entries.length,
           itemBuilder: (context, index) =>
             logic.getMarkTile(context,
-                course: entries[index].key, entries: entries[index].value,
-                predict: predict, aceGrading: aceGrading
+              course: entries[index].key, entries: entries[index].value,
+              predict: predict, aceGrading: aceGrading
             )
         )
 

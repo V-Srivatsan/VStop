@@ -13,8 +13,9 @@ class Mark {
   int id;
   var entry = ToOne<TimetableEntry>();
   String title; double score, maxScore;
+  double mark, maxMark;
 
-  Mark({ this.id = 0, required this.title, required this.score, required this.maxScore });
+  Mark({ this.id = 0, required this.title, required this.score, required this.maxScore, required this.mark, required this.maxMark });
 }
 
 class MarkStore {
@@ -35,9 +36,7 @@ class MarkStore {
 
   Future<void> fetch() async {
     final entryBox = Database.getBox<TimetableEntry>();
-
-    final existing = (_box.query()..link(Mark_.entry, TimetableEntry_.semester.equals(sem.id))).build().find();
-    if (existing.isNotEmpty) _box.removeMany(existing.map((e) => e.id).toList());
+    _box.removeMany((_box.query()..link(Mark_.entry, TimetableEntry_.semester.equals(sem.id))).build().findIds());
 
     final marks_req = () async {
       final res = await WebView.request(
@@ -60,10 +59,12 @@ class MarkStore {
         final marks = tables[i].querySelectorAll("tr.tableContent-level1");
         for (var mark in marks) {
           final title = mark.children[1].text!.trim();
+          final maxMark = double.parse(mark.children[2].innerText.trim());
           final maxScore = double.parse(mark.children[3].text!.trim());
+          final m = double.parse(mark.children[5].innerText.trim());
           final score = double.parse(mark.children[6].text!.trim());
 
-          Mark r = Mark(title: title, maxScore: maxScore, score: score);
+          Mark r = Mark(title: title, maxScore: maxScore, score: score, mark: m, maxMark: maxMark);
           r.entry.target = entry;
           all_marks.add(r);
         }
@@ -113,7 +114,7 @@ class MarkStore {
         tasks.add(syncToFirestore(MarkStore(sem.code).getCourseMap()));
     else
       for (var course in data.keys)
-        if (course.grade == null)
+        if (data[course]!.any((e) => e.grade == null))
           tasks.add(() async {
             final grade = await getGrade(course: course, entries: data[course]!, user: auth, aceGrading: aceGrading);
             data[course] = data[course]!.map((e) { e.grade = '*$grade'; return e; }).toList();

@@ -21,7 +21,14 @@ class _LoginFormState extends State<LoginForm> {
   bool loading = true, showPassword = false;
   Uint8List? captcha; String? error;
 
-  bool first = true;
+  bool first = true; int tries = 0;
+
+  void submitForm() {
+    if (!_key.currentState!.saveAndValidate()) return;
+    final data = _key.currentState!.value;
+    logic.login(data['username'], data['password'], data['captcha']);
+    setState(() { loading = true; error = null; });
+  }
 
   @override
   void initState() {
@@ -49,10 +56,28 @@ class _LoginFormState extends State<LoginForm> {
       }
 
       captcha = await logic.getCaptcha();
-      if (url == WebView.loginErrorUrl) error = await logic.getLoginError();
+      if (captcha != null) {
+        final captchaStr = await logic.getCaptchaStr(captcha!);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _key.currentState!.patchValue({'captcha': captchaStr});
+          if (tries < 3) submitForm();
+        });
+      } else WidgetsBinding.instance.addPostFrameCallback((_) { if (tries < 3) submitForm(); });
+
+      if (url == WebView.loginErrorUrl) { 
+        error = await logic.getLoginError();
+        if (_key.currentState!.value["username"].isNotEmpty)
+          tries += (error?.contains('Captcha') ?? false) ? 1 : 5;
+      }
 
       if (mounted) setState(() { loading = false; });
     });
+  }
+
+  @override
+  void dispose() {
+    logic.free(); WebView.dispose();
+    super.dispose();
   }
 
   @override
@@ -78,7 +103,6 @@ class _LoginFormState extends State<LoginForm> {
                 icon: Icon(showPassword ? Icons.visibility_off : Icons.visibility)
               )
             ),
-
           ),
 
           ...(captcha == null ? [] : [
@@ -93,13 +117,11 @@ class _LoginFormState extends State<LoginForm> {
             Text(error!, style: TextStyle(color: Colors.red, fontWeight: .bold), textAlign: .center),
 
           FilledButton(
-            onPressed: loading ? null : () {
-              if (!_key.currentState!.saveAndValidate()) return;
-              final data = _key.currentState!.value;
-              logic.login(data['username'], data['password'], data['captcha']);
-              setState(() { loading = true; error = null; });
-            },
-            child: loading ? CircularProgressIndicator() : Text("Sync with V-TOP")
+            onPressed: loading ? null : submitForm,
+            child: !loading ? Text("Sync with V-TOP") :
+                Row(mainAxisAlignment: .spaceBetween, spacing: 10, children: [
+                  Text("Loading V-Top..."), CircularProgressIndicator(constraints: .tight(Size(25, 25)))
+                ],)
           ),
 
         ],

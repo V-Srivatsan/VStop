@@ -15,6 +15,7 @@ import 'package:objectbox/objectbox.dart' as obx;
 import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
 import 'lib/data/local/assignments.dart';
+import 'lib/data/local/ffcs.dart';
 import 'lib/data/scraped/calendar.dart';
 import 'lib/data/scraped/course.dart';
 import 'lib/data/scraped/marks.dart';
@@ -229,7 +230,7 @@ final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
     id: const obx_int.IdUid(5, 8359651986574788630),
     name: 'Mark',
-    lastPropertyId: const obx_int.IdUid(5, 3778868705849972652),
+    lastPropertyId: const obx_int.IdUid(7, 5480601534870910557),
     flags: 0,
     properties: <obx_int.ModelProperty>[
       obx_int.ModelProperty(
@@ -262,6 +263,18 @@ final _entities = <obx_int.ModelEntity>[
       obx_int.ModelProperty(
         id: const obx_int.IdUid(5, 3778868705849972652),
         name: 'maxScore',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(6, 442952159189524805),
+        name: 'mark',
+        type: 8,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(7, 5480601534870910557),
+        name: 'maxMark',
         type: 8,
         flags: 0,
       ),
@@ -426,6 +439,74 @@ final _entities = <obx_int.ModelEntity>[
     relations: <obx_int.ModelRelation>[],
     backlinks: <obx_int.ModelBacklink>[],
   ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(10, 2320971774202494697),
+    name: 'FFCSCourse',
+    lastPropertyId: const obx_int.IdUid(5, 6815688898709797955),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 242130587351321293),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 8983233272591022751),
+        name: 'code',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(3, 8801557287271468283),
+        name: 'name',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(4, 3304655744960631661),
+        name: 'faculty',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(5, 6815688898709797955),
+        name: 'slots',
+        type: 30,
+        flags: 0,
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
+  obx_int.ModelEntity(
+    id: const obx_int.IdUid(11, 5985315849386685571),
+    name: 'FFCSDraft',
+    lastPropertyId: const obx_int.IdUid(3, 7205778119995622866),
+    flags: 0,
+    properties: <obx_int.ModelProperty>[
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(1, 3604508441235877501),
+        name: 'id',
+        type: 6,
+        flags: 1,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(2, 6849887013742771912),
+        name: 'name',
+        type: 9,
+        flags: 0,
+      ),
+      obx_int.ModelProperty(
+        id: const obx_int.IdUid(3, 7205778119995622866),
+        name: 'courses',
+        type: 13,
+        flags: 0,
+      ),
+    ],
+    relations: <obx_int.ModelRelation>[],
+    backlinks: <obx_int.ModelBacklink>[],
+  ),
 ];
 
 /// Shortcut for [obx.Store.new] that passes [getObjectBoxModel] and for Flutter
@@ -471,11 +552,11 @@ obx_int.ModelDefinition getObjectBoxModel() {
     // Typically, this is done with `dart run build_runner build`.
     generatorVersion: obx_int.GeneratorVersion.v2025_12_16,
     entities: _entities,
-    lastEntityId: const obx_int.IdUid(9, 655735096497057320),
+    lastEntityId: const obx_int.IdUid(12, 3622114622570360959),
     lastIndexId: const obx_int.IdUid(13, 1552415668056798070),
     lastRelationId: const obx_int.IdUid(0, 0),
     lastSequenceId: const obx_int.IdUid(0, 0),
-    retiredEntityUids: const [6117339244360381770],
+    retiredEntityUids: const [6117339244360381770, 3622114622570360959],
     retiredIndexUids: const [3191994156590455572, 1552415668056798070],
     retiredPropertyUids: const [
       3594803508846366057,
@@ -486,6 +567,15 @@ obx_int.ModelDefinition getObjectBoxModel() {
       5791292606650345061,
       3983228616316491681,
       1532407042799090196,
+      6542218225891475384,
+      1848397570724303708,
+      4911036802165461435,
+      4745376432541177531,
+      5785590222889771229,
+      839198604203573372,
+      5639002336469439361,
+      183242412434498403,
+      6606655339044807459,
     ],
     retiredRelationUids: const [],
     modelVersion: 5,
@@ -790,12 +880,14 @@ obx_int.ModelDefinition getObjectBoxModel() {
       },
       objectToFB: (Mark object, fb.Builder fbb) {
         final titleOffset = fbb.writeString(object.title);
-        fbb.startTable(6);
+        fbb.startTable(8);
         fbb.addInt64(0, object.id);
         fbb.addInt64(1, object.entry.targetId);
         fbb.addOffset(2, titleOffset);
         fbb.addFloat64(3, object.score);
         fbb.addFloat64(4, object.maxScore);
+        fbb.addFloat64(5, object.mark);
+        fbb.addFloat64(6, object.maxMark);
         fbb.finish(fbb.endTable());
         return object.id;
       },
@@ -823,11 +915,25 @@ obx_int.ModelDefinition getObjectBoxModel() {
           12,
           0,
         );
+        final markParam = const fb.Float64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          14,
+          0,
+        );
+        final maxMarkParam = const fb.Float64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          16,
+          0,
+        );
         final object = Mark(
           id: idParam,
           title: titleParam,
           score: scoreParam,
           maxScore: maxScoreParam,
+          mark: markParam,
+          maxMark: maxMarkParam,
         );
         object.entry.targetId = const fb.Int64Reader().vTableGet(
           buffer,
@@ -1034,6 +1140,107 @@ obx_int.ModelDefinition getObjectBoxModel() {
         return object;
       },
     ),
+    FFCSCourse: obx_int.EntityDefinition<FFCSCourse>(
+      model: _entities[8],
+      toOneRelations: (FFCSCourse object) => [],
+      toManyRelations: (FFCSCourse object) => {},
+      getId: (FFCSCourse object) => object.id,
+      setId: (FFCSCourse object, int id) {
+        object.id = id;
+      },
+      objectToFB: (FFCSCourse object, fb.Builder fbb) {
+        final codeOffset = fbb.writeString(object.code);
+        final nameOffset = fbb.writeString(object.name);
+        final facultyOffset = fbb.writeString(object.faculty);
+        final slotsOffset = fbb.writeList(
+          object.slots.map(fbb.writeString).toList(growable: false),
+        );
+        fbb.startTable(6);
+        fbb.addInt64(0, object.id);
+        fbb.addOffset(1, codeOffset);
+        fbb.addOffset(2, nameOffset);
+        fbb.addOffset(3, facultyOffset);
+        fbb.addOffset(4, slotsOffset);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+        final idParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          4,
+          0,
+        );
+        final codeParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 6, '');
+        final nameParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 8, '');
+        final facultyParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 10, '');
+        final slotsParam = const fb.ListReader<String>(
+          fb.StringReader(asciiOptimization: true),
+          lazy: false,
+        ).vTableGet(buffer, rootOffset, 12, []);
+        final object = FFCSCourse(
+          id: idParam,
+          code: codeParam,
+          name: nameParam,
+          faculty: facultyParam,
+          slots: slotsParam,
+        );
+
+        return object;
+      },
+    ),
+    FFCSDraft: obx_int.EntityDefinition<FFCSDraft>(
+      model: _entities[9],
+      toOneRelations: (FFCSDraft object) => [],
+      toManyRelations: (FFCSDraft object) => {},
+      getId: (FFCSDraft object) => object.id,
+      setId: (FFCSDraft object, int id) {
+        object.id = id;
+      },
+      objectToFB: (FFCSDraft object, fb.Builder fbb) {
+        final nameOffset = fbb.writeString(object.name);
+        final coursesOffset = fbb.writeListInt8(
+          obx_int.toFlexBuffer(object.courses),
+        );
+        fbb.startTable(4);
+        fbb.addInt64(0, object.id);
+        fbb.addOffset(1, nameOffset);
+        fbb.addOffset(2, coursesOffset);
+        fbb.finish(fbb.endTable());
+        return object.id;
+      },
+      objectFromFB: (obx.Store store, ByteData fbData) {
+        final buffer = fb.BufferContext(fbData);
+        final rootOffset = buffer.derefObject(0);
+        final idParam = const fb.Int64Reader().vTableGet(
+          buffer,
+          rootOffset,
+          4,
+          0,
+        );
+        final nameParam = const fb.StringReader(
+          asciiOptimization: true,
+        ).vTableGet(buffer, rootOffset, 6, '');
+        final coursesParam =
+            obx_int.flexBufferToListOfMaps(buffer, rootOffset, 8) ??
+            <Map<String, dynamic>>[];
+        final object = FFCSDraft(
+          id: idParam,
+          name: nameParam,
+          courses: coursesParam,
+        );
+
+        return object;
+      },
+    ),
   };
 
   return obx_int.ModelDefinition(model, bindings);
@@ -1200,6 +1407,14 @@ class Mark_ {
   static final maxScore = obx.QueryDoubleProperty<Mark>(
     _entities[4].properties[4],
   );
+
+  /// See [Mark.mark].
+  static final mark = obx.QueryDoubleProperty<Mark>(_entities[4].properties[5]);
+
+  /// See [Mark.maxMark].
+  static final maxMark = obx.QueryDoubleProperty<Mark>(
+    _entities[4].properties[6],
+  );
 }
 
 /// [CalendarEntry] entity fields to define ObjectBox queries.
@@ -1308,5 +1523,46 @@ class Assignment_ {
   /// See [Assignment.sem].
   static final sem = obx.QueryStringProperty<Assignment>(
     _entities[7].properties[5],
+  );
+}
+
+/// [FFCSCourse] entity fields to define ObjectBox queries.
+class FFCSCourse_ {
+  /// See [FFCSCourse.id].
+  static final id = obx.QueryIntegerProperty<FFCSCourse>(
+    _entities[8].properties[0],
+  );
+
+  /// See [FFCSCourse.code].
+  static final code = obx.QueryStringProperty<FFCSCourse>(
+    _entities[8].properties[1],
+  );
+
+  /// See [FFCSCourse.name].
+  static final name = obx.QueryStringProperty<FFCSCourse>(
+    _entities[8].properties[2],
+  );
+
+  /// See [FFCSCourse.faculty].
+  static final faculty = obx.QueryStringProperty<FFCSCourse>(
+    _entities[8].properties[3],
+  );
+
+  /// See [FFCSCourse.slots].
+  static final slots = obx.QueryStringVectorProperty<FFCSCourse>(
+    _entities[8].properties[4],
+  );
+}
+
+/// [FFCSDraft] entity fields to define ObjectBox queries.
+class FFCSDraft_ {
+  /// See [FFCSDraft.id].
+  static final id = obx.QueryIntegerProperty<FFCSDraft>(
+    _entities[9].properties[0],
+  );
+
+  /// See [FFCSDraft.name].
+  static final name = obx.QueryStringProperty<FFCSDraft>(
+    _entities[9].properties[1],
   );
 }

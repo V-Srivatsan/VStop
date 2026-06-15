@@ -27,5 +27,6 @@ Future<void> fetchProfile() async {
   name = (name.length > 15 ? name.split(" ").first : name).toLowerCase();
   name = name.split(" ").map((s) => s[0].toUpperCase() + s.substring(1)).join(" ");
 
+  if (reg.startsWith('25')) PrefStore.setACEGrading(true);
   await PrefStore.setName(name);
 }
