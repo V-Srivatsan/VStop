@@ -76,7 +76,7 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   void dispose() {
-    logic.free();
+    logic.free(); WebView.dispose();
     super.dispose();
   }
 

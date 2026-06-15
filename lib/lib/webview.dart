@@ -36,6 +36,11 @@ class WebView {
     )..run();
   }
 
+  static void dispose() {
+    controller?.dispose(); _webview?.dispose();
+    controller = null; _webview = null;
+  }
+
   static Future<String> request(String url, [Map<String, String>? data, bool debug = false]) async {
     Map<String, String> body = data ?? {};
 
