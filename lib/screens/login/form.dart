@@ -118,7 +118,10 @@ class _LoginFormState extends State<LoginForm> {
 
           FilledButton(
             onPressed: loading ? null : submitForm,
-            child: Text(loading ? "Loading V-Top..." : "Sync with V-TOP")
+            child: !loading ? Text("Sync with V-TOP") :
+                Row(mainAxisAlignment: .spaceBetween, spacing: 10, children: [
+                  Text("Loading V-Top..."), CircularProgressIndicator(constraints: .tight(Size(25, 25)))
+                ],)
           ),
 
         ],
