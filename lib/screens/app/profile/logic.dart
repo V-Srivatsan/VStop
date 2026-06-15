@@ -41,32 +41,31 @@ Future<void> updateTheme(BuildContext context) async {
 
   showDialog(context: context, builder: (ctx) => AlertDialog(
     title: Text("Change Theme"),
-    content: Column(
-      mainAxisSize: .min, crossAxisAlignment: .stretch,
+    content: GridView.count(
+      shrinkWrap: true,
+      crossAxisCount: 2, crossAxisSpacing: 10,
       children: [
-
-        Card(child: ListTile(
-          title: Text("Light Theme"), leading: Icon(Icons.light_mode),
-          onTap: () => change(ctx, .light),
-        )),
-
-        Card(child: ListTile(
-          title: Text("Dark Theme"), leading: Icon(Icons.dark_mode),
-          onTap: () => change(ctx, .dark),
-        )),
-
-        Card(child: ListTile(
-          title: Text("AMOLED Theme"), leading: Icon(Icons.dark_mode_outlined),
-          onTap: () => change(ctx, .amoled),
-        )),
-
-        Card(child: ListTile(
-          title: Text("System Theme"), leading: Icon(Icons.brightness_medium),
-          onTap: () => change(ctx, .system),
-        ))
-
+        for (final theme in [
+          ("Light", AppTheme.light, Icons.light_mode),
+          ("Dark", AppTheme.dark, Icons.dark_mode),
+          ("AMOLED", AppTheme.amoled, Icons.dark_mode_outlined),
+          ("System", AppTheme.system, Icons.brightness_medium)
+        ])
+          InkWell(
+            onTap: () => change(ctx, theme.$2),
+            child: Card(child: Container(
+              alignment: .center,
+              child: Column(
+                mainAxisSize: .min, spacing: 10,
+                children: [
+                  Icon(theme.$3),
+                  Text(theme.$1, style: Theme.of(context).textTheme.bodyLarge)
+                ],
+              ),
+            )),
+          )
       ],
-    ),
+    )
   ));
 }
 
