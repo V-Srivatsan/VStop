@@ -36,9 +36,7 @@ class MarkStore {
 
   Future<void> fetch() async {
     final entryBox = Database.getBox<TimetableEntry>();
-
-    final existing = (_box.query()..link(Mark_.entry, TimetableEntry_.semester.equals(sem.id))).build().find();
-    if (existing.isNotEmpty) _box.removeMany(existing.map((e) => e.id).toList());
+    _box.removeMany((_box.query()..link(Mark_.entry, TimetableEntry_.semester.equals(sem.id))).build().findIds());
 
     final marks_req = () async {
       final res = await WebView.request(
