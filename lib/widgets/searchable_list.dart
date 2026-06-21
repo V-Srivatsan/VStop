@@ -34,7 +34,7 @@ class _SearchableListState<T> extends State<SearchableList<T>> {
         controller: controller,
         leading: const Icon(Icons.search), hintText: widget.hintText,
         onChanged: (text) => setState(() => filtered = widget.items.where(
-          (item) => widget.searchKey(item).contains(text)
+          (item) => widget.searchKey(item).contains(text.toLowerCase())
         ).toList()),
         trailing: filtered.length == widget.items.length ? null : [IconButton(
           onPressed: () {
