@@ -127,6 +127,7 @@ class Timetable {
         final doc = parseHtmlDocument(res);
         final rows = doc.querySelectorAll('table tbody tr');
         for (var row in rows) {
+          if (row.children.length == 1) continue;
           final date = DateFormat("yyyyMMdd")
               .format(DateFormat("dd-MMM-yyyy").parse(row.children[1].text!.trim()));
 
