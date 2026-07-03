@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'estimator/index.dart' as estimator;
 import 'mark_tile.dart';
 
 import 'package:vstop/lib/db.dart';
@@ -26,7 +27,7 @@ void syncMarks(
 
 Widget getMarkTile(BuildContext ctx, {
   required Course course, required List<TimetableEntry> entries,
-  required bool predict, required bool aceGrading
+  required bool predict, required bool aceGrading, required void Function() refresh
 }) {
   List<Widget> children = [];
 
@@ -49,10 +50,14 @@ Widget getMarkTile(BuildContext ctx, {
   return MarkTile(
     Mark(title: course.name, mark: score.$1, maxMark: score.$2, score: score.$1, maxScore: score.$2),
     grade: predict || grade == null ? grade : grade.startsWith('*') ? null : grade,
+    onLongTap: course.getGrading(aceGrading) == .relative ?
+      () async {
+        await Navigator.push(ctx, MaterialPageRoute(builder: (_) => estimator.Screen(entries, aceGrading)));
+        refresh();
+      } : null,
     onTap: score.$2 == 0 ? null : () => showModalBottomSheet(
         context: ctx,
         builder: (_) {
-
           return Container(
             padding: .symmetric(horizontal: 20, vertical: 10),
             child: SingleChildScrollView(child: Column(

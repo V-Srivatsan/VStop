@@ -18,13 +18,12 @@ class _ScreenState extends State<Screen> {
   List<MapEntry<Course, List<TimetableEntry>>> entries = [];
   bool syncing = false, predict = false, aceGrading = false; String sem = "";
 
+  void refresh() => setState(() => entries = MarkStore(sem).getCourseMap().entries.toList());
+
   @override
   void initState() {
     super.initState();
-    PrefStore.getSem().then((sem) {
-      this.sem = sem;
-      setState(() => entries = MarkStore(sem).getCourseMap().entries.toList());
-    });
+    PrefStore.getSem().then((sem) { this.sem = sem; refresh(); });
     PrefStore.getPredictiveGrades().then((val) => predict = val);
     PrefStore.getACEGrading().then((val) => aceGrading = val);
 
@@ -93,7 +92,7 @@ class _ScreenState extends State<Screen> {
           itemBuilder: (context, index) =>
             logic.getMarkTile(context,
               course: entries[index].key, entries: entries[index].value,
-              predict: predict, aceGrading: aceGrading
+              predict: predict, aceGrading: aceGrading, refresh: refresh
             )
         )
 

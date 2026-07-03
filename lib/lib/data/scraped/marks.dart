@@ -128,6 +128,15 @@ class MarkStore {
 }
 
 
+String getRelativeGrade(double avg, double std, double score, double percent) {
+  if (score >= (avg + 1.5*std) && percent >= 0.8) return "S";
+  if (score >= (avg + 0.5*std)) return "A";
+  if (score >= (avg - 0.5*std)) return "B";
+  if (score >= (avg - 1.0*std)) return "C";
+  if (score >= (avg - 1.5*std)) return "D";
+  if (score >= (avg - 2.0*std)) return "E";
+  return "F";
+}
 
 Future<String> getGrade({
   required Course course, required List<TimetableEntry> entries,
@@ -149,13 +158,7 @@ Future<String> getGrade({
     double avg = marks.values.fold(0.0, (p, m) => p+m) / marks.length;
     double std = sqrt(marks.values.fold(0.0, (p, m) => p + pow(m-avg, 2)) / marks.length);
 
-    if (score.$1 >= (avg + 1.5*std) && percent >= 0.8) return "S";
-    if (score.$1 >= (avg + 0.5*std)) return "A";
-    if (score.$1 >= (avg - 0.5*std)) return "B";
-    if (score.$1 >= (avg - 1.0*std)) return "C";
-    if (score.$1 >= (avg - 1.5*std)) return "D";
-    if (score.$1 >= (avg - 2.0*std)) return "E";
-    return "F";
+    return getRelativeGrade(avg, std, score.$1, percent);
   }
 
   if (grading == .absolute) {

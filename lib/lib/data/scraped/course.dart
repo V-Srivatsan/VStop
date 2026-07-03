@@ -33,15 +33,19 @@ class Course {
     (ace ? .relative : .absolute)
   );
 
+  double getTheoryFactor(List<TimetableEntry> entries) {
+    if (entries.length <= 1) return 1;
+    try {
+      final theory = entries.firstWhere((e) => !e.isLab && e.slots.isNotEmpty);
+      return (theory.slots.length + (theory.slots.first.length == 1 ? 0 : 1)) / credits;
+    } catch (_) {
+      return 1;
+    }
+  }
+
   (double, double) getScore(List<TimetableEntry> entries, bool ace) {
     double total = 0, maxTotal = 0;
-    double theoryFactor = 1;
-
-    for (var entry in entries)
-      if (!entry.isLab && entry.slots.isNotEmpty) {
-        theoryFactor = (entry.slots.length + (entry.slots.first.length == 2 ? 1 : 0)) / credits;
-        break;
-      }
+    double theoryFactor = getTheoryFactor(entries);
 
     for (var entry in entries) {
       final marks = entry.marks;
