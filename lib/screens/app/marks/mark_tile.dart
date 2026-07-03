@@ -3,8 +3,8 @@ import 'package:vstop/lib/db.dart' show Mark;
 
 class MarkTile extends StatefulWidget {
   final Mark mark;
-  final String? grade; final void Function()? onTap;
-  const MarkTile(this.mark, { super.key, this.grade, this.onTap });
+  final String? grade; final void Function()? onTap, onLongTap;
+  const MarkTile(this.mark, { super.key, this.grade, this.onTap, this.onLongTap });
 
   @override
   State<MarkTile> createState() => _MarkTileState();
@@ -20,6 +20,7 @@ class _MarkTileState extends State<MarkTile> {
 
     return Card(child: ListTile(
       title: Text(widget.mark.title), onTap: widget.onTap ?? () => setState(() => weighted = !weighted),
+      onLongPress: widget.onLongTap,
       subtitle: widget.grade == null ? null : Text("Grade${isEst ? ' (est)' : ''}: ${isEst ? widget.grade![1] : widget.grade}"),
       trailing: widget.mark.maxScore == 0 ? null : Stack(
         alignment: .center,
