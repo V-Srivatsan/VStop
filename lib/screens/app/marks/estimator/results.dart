@@ -17,15 +17,17 @@ class Results extends StatelessWidget {
     final grades = [
       (
         logic.getGrade(avg, logic.estimateSD(score/total)-2, score, score/total),
-        score > avg ? colorScheme.secondary : colorScheme.error
+        score > avg ? colorScheme.secondary : colorScheme.error,
+        "Low SD"
       ),
       (
         logic.getGrade(avg, logic.estimateSD(score/total), score, score/total),
-        colorScheme.primary
+        colorScheme.primary, "Normal SD"
       ),
       (
         logic.getGrade(avg, logic.estimateSD(score/total)+4, score, score/total),
-        score > avg ? colorScheme.error : colorScheme.secondary
+        score > avg ? colorScheme.error : colorScheme.secondary,
+        "High SD"
       )
     ];
 
@@ -37,7 +39,7 @@ class Results extends StatelessWidget {
           children: [
             for (var estimate in grades)
               DisplayCard(
-                label: "Low SD", color: estimate.$2,
+                label: estimate.$3, color: estimate.$2,
                 onTap: () => updateGrade(estimate.$1),
                 child: Text(estimate.$1, style: style),
               ),
