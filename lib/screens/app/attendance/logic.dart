@@ -8,11 +8,14 @@ Map<String, int> getSlotCounts(String sem) {
   int? today_weekday;
   final counts = List.filled(5, 0);
 
-  for (
-    var entry in
-    AcademicCalendar.getEntries(sem)
-      .where((e) => e.entryType == .instructional && today.compareTo(e.date) <= 0)
-  ) {
+  List<CalendarEntry> entries = [];
+  for (var entry in AcademicCalendar.getEntries(sem)) {
+    if (today.compareTo(entry.date) > 0) continue;
+    if (entry.entryType == .exam) break;
+    if (entry.entryType == .instructional) entries.add(entry);
+  }
+
+  for (var entry in entries) {
     counts[entry.weekday! - DateTime.monday]++;
     if (today == entry.date) today_weekday = entry.weekday! - DateTime.monday;
   }
