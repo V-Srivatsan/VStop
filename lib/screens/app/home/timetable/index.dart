@@ -29,8 +29,11 @@ class _ScreenState extends State<Screen> {
   Widget build(BuildContext context) {
 
     final schedules = DAYS.map((d) => getSchedule(classes, d.$1));
+    final weekday = getTodayWeekday();
 
-    return DefaultTabController(length: 5, child: Scaffold(
+    return DefaultTabController(
+      length: 5, initialIndex: weekday == null ? 0 : weekday - DateTime.monday,
+      child: Scaffold(
       appBar: AppBar(
         title: Text("Timetable"),
         bottom: TabBar(tabs: DAYS.map((i) => Tab(text: i.$2)).toList()),
