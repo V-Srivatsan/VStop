@@ -23,6 +23,7 @@ void main() async {
 
   FirebaseMessaging.onBackgroundMessage(FCMBackground);
   await NotificationController.initialize();
+  executeTask(SCHEDULE_NOTIFICATIONS_TASK);
   Workmanager().initialize(callbackDispatcher);
 
   runApp(ValueListenableBuilder<AppTheme>(
