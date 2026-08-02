@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'home/index.dart' as home;
 import 'attendance/index.dart' as attendance;
@@ -30,6 +34,32 @@ class _ScreenState extends State<Screen> {
   void updateActions(List<Widget> lst) {
     if (mounted) setState(() => actions = lst);
     else actions = lst;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    PackageInfo.fromPlatform().then((info) async {
+      final latest = jsonDecode((await http.get(
+          Uri.parse("https://api.github.com/repos/V-Srivatsan/VStop/releases/latest")
+      )).body)['tag_name'];
+
+      if (latest != 'v${info.version}' && context.mounted)
+        await showDialog(
+          context: context, barrierDismissible: false,
+          builder: (ctx) => AlertDialog(
+              title: Text("Update Available"),
+              content: Text("A new version of V-Stop is available for download!\n\nPlease update to the latest version for the best experience."),
+              actions: [
+                OutlinedButton(onPressed: () => Navigator.pop(ctx), child: Text("Later")),
+                FilledButton(
+                    onPressed: () => launchUrl(Uri.parse("https://github.com/V-Srivatsan/VStop/releases/latest")),
+                    child: Text("Download")
+                )
+              ]
+          )
+        );
+    });
   }
 
   @override
