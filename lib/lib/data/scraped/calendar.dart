@@ -109,20 +109,21 @@ class AcademicCalendar {
     final entries = <ExamEntry>[];
     for (var row in rows) {
       if (row.children.length == 1) continue;
+      try {
+        final title = row.children[2].innerText.trim();
+        final date = DateFormat("yyyyMMdd").format(DateFormat("dd-MMM-yyyy").parse(row.children[6].innerText.trim()));
+        final time = row.children[9].innerText.trim().split("-");
+        final venue = row.children[10].innerText.trim(); final seatLoc = row.children[11].innerText.trim();
+        final seatNo = row.children[12].innerText.trim();
 
-      final title = row.children[2].innerText.trim();
-      final date = DateFormat("yyyyMMdd").format(DateFormat("dd-MMM-yyyy").parse(row.children[6].innerText.trim()));
-      final time = row.children[9].innerText.trim().split("-");
-      final venue = row.children[10].innerText.trim(); final seatLoc = row.children[11].innerText.trim();
-      final seatNo = row.children[12].innerText.trim();
-
-      final entry = ExamEntry(
-        course: title, date: date,
-        from: DateFormat("HH:mm").format(DateFormat("hh:mm a").parse(time.first.trim())),
-        to: DateFormat("HH:mm").format(DateFormat("hh:mm a").parse(time.last.trim())),
-        venue: venue, seatLoc: seatLoc, seatNo: seatNo
-      ); entry.sem.target = sem;
-      entries.add(entry);
+        final entry = ExamEntry(
+            course: title, date: date,
+            from: DateFormat("HH:mm").format(DateFormat("hh:mm a").parse(time.first.trim())),
+            to: DateFormat("HH:mm").format(DateFormat("hh:mm a").parse(time.last.trim())),
+            venue: venue, seatLoc: seatLoc, seatNo: seatNo
+        ); entry.sem.target = sem;
+        entries.add(entry);
+      } catch (e) { continue; }
     }
     _examBox.putMany(entries);
   }
