@@ -22,6 +22,7 @@ class _ScreenState extends State<Screen> {
 
   String? user; Semester? sem;
   List<tt_logic.ScheduleClass> classes = [];
+  List<ExamEntry> exams = [];
 
   @override
   void initState() {
@@ -32,8 +33,11 @@ class _ScreenState extends State<Screen> {
       final weekday = tt_logic.getTodayWeekday();
       final schedule = weekday == null ? <tt_logic.ScheduleClass>[] : tt_logic.getSchedule(timetable.getCourses(), weekday);
 
-      if (!mounted) { user = name; classes = schedule; sem = timetable.sem; }
-      else setState(() { user = name; classes = schedule; sem = timetable.sem; });
+      final today = DateFormat("yyyyMMdd").format(.now());
+      final ex = AcademicCalendar.getSchedule().where((e) => e.date == today).toList();
+
+      if (!mounted) { user = name; classes = schedule; sem = timetable.sem; exams = ex; }
+      else setState(() { user = name; classes = schedule; sem = timetable.sem; exams = ex; });
     }();
   }
 
@@ -92,7 +96,7 @@ class _ScreenState extends State<Screen> {
                     ],
                   ),
 
-                  Schedule(classes)
+                  Schedule(classes, exams: exams)
                 ],
               ),
             ],
