@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:vstop/lib/db.dart';
+import 'package:vstop/screens/app/home/timetable/card.dart' show ExamCard;
 
 class Details extends StatelessWidget {
   final Map<String, CalendarEntry> entries;
@@ -19,20 +20,7 @@ class Details extends StatelessWidget {
         ),
 
         for (var exam in exams[date!] ?? <ExamEntry>[])
-          Card(child: ListTile(
-            title: Text(exam.course),
-            subtitle: Column(
-              mainAxisSize: .min, crossAxisAlignment: .start,
-              children: [
-                Text('${exam.from} - ${exam.to}'),
-                Text(
-                  '${exam.seatNo} (${exam.seatLoc})',
-                  style: Theme.of(context).textTheme.bodySmall
-                )
-              ],
-            ),
-            trailing: Text(exam.venue.replaceAll('-', '\n')),
-          )),
+          ExamCard(exam),
 
         if (exams[date!] != null && assignments[date!] != null) Divider(),
 
