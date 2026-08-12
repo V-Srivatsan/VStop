@@ -82,7 +82,7 @@ class AcademicCalendar {
 
               final dateStr = DateFormat('yyyyMMdd').format(DateFormat('dd-MMM-yyyy').parse('${info[0].innerText}-$month'));
               final type = info[1].innerText.split("-").first.trim();
-              String comment = info[2].innerText; comment = comment.substring(1, comment.length-1);
+              String comment = info[2].innerText.replaceFirst('(', '').replaceFirst(')', '');
 
               final entry = CalendarEntry(date: dateStr, type: type, comment: comment); entry.sem.target = sem;
               dates.add(entry);
