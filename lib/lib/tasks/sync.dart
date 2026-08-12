@@ -43,9 +43,9 @@ Future<bool> syncData() async {
     }
 
     if (url == WebView.loginErrorUrl)
-      tries += (await logic.getLoginError())!.contains("Captcha") ? 1 : 5;
+      tries += (await logic.getLoginError())!.contains("Captcha") ? 1 : 1000;
 
-    if (tries >= 3) return status.complete(false);
+    if (tries >= 5) return status.complete(false);
 
     final cred = (await logic.getCred())!;
     final cap = await logic.getCaptcha();

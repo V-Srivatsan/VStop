@@ -60,14 +60,14 @@ class _LoginFormState extends State<LoginForm> {
         final captchaStr = await logic.getCaptchaStr(captcha!);
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _key.currentState!.patchValue({'captcha': captchaStr});
-          if (tries < 3) submitForm();
+          if (tries < 5) submitForm();
         });
-      } else WidgetsBinding.instance.addPostFrameCallback((_) { if (tries < 3) submitForm(); });
+      } else WidgetsBinding.instance.addPostFrameCallback((_) { if (tries < 5) submitForm(); });
 
       if (url == WebView.loginErrorUrl) { 
         error = await logic.getLoginError();
         if (_key.currentState!.value["username"].isNotEmpty)
-          tries += (error?.contains('Captcha') ?? false) ? 1 : 5;
+          tries += (error?.contains('Captcha') ?? false) ? 1 : 1000;
       }
 
       if (mounted) setState(() { loading = false; });
