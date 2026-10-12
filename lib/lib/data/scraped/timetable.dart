@@ -63,35 +63,42 @@ class Timetable {
 
     for (var row in rows) {
       final children = row.children;
-      if (children.length != 12) continue;
+      if (children.length < 8) continue;
 
-      Course? course = CourseStore.getCourse(children[2].text!.trim().split(" - ").first.trim());
+      final courseNameText = children[2].text?.trim() ?? "";
+      final info = courseNameText.split(" - ");
+      final courseCode = info.first.trim();
+      Course? course = CourseStore.getCourse(courseCode);
       if (course == null) {
-        final info = children[2].text!.trim().split(" - ");
-        final code = info.first.trim(), name = info.last.split("(").first.trim();
-        final double credits = .parse(children[3].innerText.split(" ").last.trim());
+        final name = info.isNotEmpty ? info.last.split("(").first.trim() : courseCode;
+        final creditsStr = children.length > 3 ? children[3].innerText.split(" ").last.trim() : "0";
+        final double credits = double.tryParse(creditsStr) ?? 0.0;
 
-        if (courseCache[code] != null) courseCache[code]!.credits += credits;
+        if (courseCache[courseCode] != null) courseCache[courseCode]!.credits += credits;
         else {
-          String type = info.last.split("(").last.trim();
-          type = (
-              info[0] == 'P' ? 'PJT' :
-              info[0] == 'E' ? 'ETL' :
-              info[0] == 'O' ? 'OC' :
-              info[0] == 'L' ? 'LO' : 'TH'
-          );
+          String type = 'TH';
+          if (info.isNotEmpty && info[0].isNotEmpty) {
+            type = (
+                info[0] == 'P' ? 'PJT' :
+                info[0] == 'E' ? 'ETL' :
+                info[0] == 'O' ? 'OC' :
+                info[0] == 'L' ? 'LO' : 'TH'
+            );
+          }
 
-          courseCache[code] = Course(code: code, name: name, type: type, credits: credits);
-          courseBox.put(courseCache[code]!);
-          course = courseCache[code]!;
+          courseCache[courseCode] = Course(code: courseCode, name: name, type: type, credits: credits);
+          courseBox.put(courseCache[courseCode]!);
+          course = courseCache[courseCode]!;
         }
       }
-      final loc = children[7].text!.trim().split("-");
+      final locText = children[7].text?.trim() ?? "";
+      final loc = locText.split("-");
       final slots = loc.length == 3 ? loc.first.trim().split("+") : null;
       final venue = loc.length == 3 ? '${loc[1].trim()}-${loc[2].trim()}' : null;
 
+      final classId = children.length > 6 ? (children[6].text?.trim() ?? "") : "";
       final entry = TimetableEntry(
-        classId: children[6].text!.trim(),
+        classId: classId,
         slots: slots ?? [], venue: venue
       );
       entry.semester.target = sem; entry.course.target = course;

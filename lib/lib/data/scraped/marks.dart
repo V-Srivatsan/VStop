@@ -52,17 +52,20 @@ class MarkStore {
       final tables = doc.querySelectorAll("table.customTable-level1");
       List<Mark> all_marks = [];
 
-      for (int i=0; i < subj.length; i++) {
-        final classId = subj[i].children[1].text!.trim();
-        TimetableEntry entry = entryBox.query(TimetableEntry_.classId.equals(classId)).build().findFirst()!;
+      for (int i=0; i < subj.length && i < tables.length; i++) {
+        if (subj[i].children.length < 2) continue;
+        final classId = subj[i].children[1].text?.trim() ?? "";
+        final entry = entryBox.query(TimetableEntry_.classId.equals(classId)).build().findFirst();
+        if (entry == null) continue;
 
         final marks = tables[i].querySelectorAll("tr.tableContent-level1");
         for (var mark in marks) {
-          final title = mark.children[1].text!.trim();
-          final maxMark = double.parse(mark.children[2].innerText.trim());
-          final maxScore = double.parse(mark.children[3].text!.trim());
-          final m = double.parse(mark.children[5].innerText.trim());
-          final score = double.parse(mark.children[6].text!.trim());
+          if (mark.children.length < 7) continue;
+          final title = mark.children[1].text?.trim() ?? "";
+          final maxMark = double.tryParse(mark.children[2].innerText.trim()) ?? 0.0;
+          final maxScore = double.tryParse(mark.children[3].text?.trim() ?? "0") ?? 0.0;
+          final m = double.tryParse(mark.children[5].innerText.trim()) ?? 0.0;
+          final score = double.tryParse(mark.children[6].text?.trim() ?? "0") ?? 0.0;
 
           Mark r = Mark(title: title, maxScore: maxScore, score: score, mark: m, maxMark: maxMark);
           r.entry.target = entry;
@@ -87,8 +90,9 @@ class MarkStore {
       final rows = doc.querySelectorAll("table tr:not([align='center'])");
       final List<TimetableEntry> entries = [];
       for (var row in rows.skip(2)) {
-        final courseCode = row.children[1].text!.trim();
-        final grade = row.children[10].text!.trim();
+        if (row.children.length < 11) continue;
+        final courseCode = row.children[1].text?.trim() ?? "";
+        final grade = row.children[10].text?.trim() ?? "";
 
         final query = entryBox.query()
           ..link(TimetableEntry_.semester, Semester_.id.equals(sem.id))
@@ -104,24 +108,36 @@ class MarkStore {
   }
 
   static Future<void> syncToFirestore([Map<Course, List<TimetableEntry>>? data]) async {
-    final auth = (await SecureStorage.get("auth"))!;
-    final aceGrading = await PrefStore.getACEGrading();
+    try {
+      final auth = (await SecureStorage.get("auth")) ?? "";
+      final aceGrading = await PrefStore.getACEGrading();
 
-    List<Future<void>> tasks = [];
+      List<Future<void>> tasks = [];
 
-    if (data == null)
-      for (var sem in SemStore.getSems())
-        tasks.add(syncToFirestore(MarkStore(sem.code).getCourseMap()));
-    else
-      for (var course in data.keys)
-        if (data[course]!.any((e) => e.grade == null))
-          tasks.add(() async {
-            final grade = await getGrade(course: course, entries: data[course]!, user: auth, aceGrading: aceGrading);
-            data[course] = data[course]!.map((e) { e.grade = '*$grade'; return e; }).toList();
-          }());
+      if (data == null) {
+        for (var sem in SemStore.getSems()) {
+          tasks.add(syncToFirestore(MarkStore(sem.code).getCourseMap()));
+        }
+      } else {
+        for (var course in data.keys) {
+          if (data[course]!.any((e) => e.grade == null)) {
+            tasks.add(() async {
+              try {
+                final grade = await getGrade(course: course, entries: data[course]!, user: auth, aceGrading: aceGrading);
+                data[course] = data[course]!.map((e) { e.grade = '*$grade'; return e; }).toList();
+              } catch (e) {
+                print("getGrade error for ${course.code}: $e");
+              }
+            }());
+          }
+        }
+      }
 
-    await Future.wait(tasks);
-    if (data != null) (Database.getBox<TimetableEntry>()).putMany(data.values.fold([], (p, e) => p + e));
+      await Future.wait(tasks);
+      if (data != null) (Database.getBox<TimetableEntry>()).putMany(data.values.fold([], (p, e) => p + e));
+    } catch (e) {
+      print("syncToFirestore error: $e");
+    }
   }
 
   static void clear() => _box.removeAll();

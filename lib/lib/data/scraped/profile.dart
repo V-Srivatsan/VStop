@@ -14,18 +14,25 @@ Future<void> fetchProfile() async {
   );
   final doc = parseHtmlDocument(res);
   
-  final appNo = doc.querySelector('tbody td:nth-child(2)')!.text!.trim();
-  final reg = doc.querySelector('label[for="no"]')!.text!.trim();
+  final appNo = doc.querySelector('tbody td:nth-child(2)')?.text?.trim() ?? "";
+  String reg = doc.querySelector('label[for="no"]')?.text?.trim() ?? "";
+  if (reg.isEmpty) {
+    reg = (await SecureStorage.get("username")) ?? "";
+  }
 
   final authBase = "$SALT:$appNo:$reg";
   final authHash = sha256.convert(utf8.encode(authBase)).toString();
   await SecureStorage.set("auth", authHash);
 
-  String name = doc.querySelector('.content .row div p')!.text!.trim();
+  String name = doc.querySelector('.content .row div p')?.text?.trim() ?? "";
   name = NICKNAMES[reg] ?? name;
 
-  name = (name.length > 15 ? name.split(" ").first : name).toLowerCase();
-  name = name.split(" ").map((s) => s[0].toUpperCase() + s.substring(1)).join(" ");
+  if (name.isNotEmpty) {
+    name = (name.length > 15 ? name.split(" ").first : name).toLowerCase();
+    name = name.split(" ").where((s) => s.isNotEmpty).map((s) => s[0].toUpperCase() + s.substring(1)).join(" ");
+  } else {
+    name = reg.isNotEmpty ? reg : "Student";
+  }
 
   if (reg.startsWith('25')) PrefStore.setACEGrading(true);
   await PrefStore.setName(name);

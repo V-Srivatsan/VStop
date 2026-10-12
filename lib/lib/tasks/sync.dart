@@ -25,10 +25,11 @@ Future<bool> syncData() async {
   );
 
   WebView.initialize(onPageLoad: (url) async {
-    if (url != WebView.homeUrl && url != WebView.loginUrl && url != WebView.loginErrorUrl)
+    if (url.contains('/init/page') || url.contains('/prelogin/') || url.contains('/open/page')) return;
+    if (!url.contains('/content') && !url.contains('/login'))
       return status.complete(false);
 
-    if (url == WebView.homeUrl) {
+    if (url.contains('/content')) {
       loaded = true;
       if (isSyncing) return;
       isSyncing = true;

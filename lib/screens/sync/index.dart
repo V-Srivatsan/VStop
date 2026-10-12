@@ -22,7 +22,7 @@ class _ScreenState extends State<Screen> {
     syncData((p, msg) {
       if (!mounted) return 0;
       setState(() { progress = p/100.0; step = msg; });
-      if (p == 100) Navigator.of(context).pushAndRemoveUntil(
+      if (p >= 100) Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (ctx) => app.Screen()),
         (_) => false
       );

@@ -26,9 +26,14 @@ class SemStore {
     var doc = parseHtmlDocument(sem);
     final options = doc.querySelectorAll('#semesterSubId option:not([value=""])');
 
-    final sems = Map.fromEntries(options.map((opt) =>
-        MapEntry(opt.attributes["value"]!,  opt.text!.trim())
-    ));
+    final sems = <String, String>{};
+    for (var opt in options) {
+      final val = opt.attributes["value"];
+      final text = opt.text?.trim() ?? "";
+      if (val != null && val.isNotEmpty) {
+        sems[val] = text.isNotEmpty ? text : val;
+      }
+    }
 
     _box.putMany(sems.entries.map((e) =>
       Semester(code: e.key, name: e.value)
