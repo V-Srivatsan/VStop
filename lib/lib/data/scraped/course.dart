@@ -110,11 +110,12 @@ class CourseStore {
         final rows = doc.querySelectorAll('table tbody tr');
         final List<Course> courses = [];
         for (var row in rows) {
+          if (row.children.length < 5) continue;
           final course = Course(
-            code: row.children[1].text!.trim(),
-            name: row.children[2].text!.trim(),
-            type: row.children[3].text!.trim(),
-            credits: .parse(row.children[4].text!.trim())
+            code: row.children[1].text?.trim() ?? "",
+            name: row.children[2].text?.trim() ?? "",
+            type: row.children[3].text?.trim() ?? "",
+            credits: double.tryParse(row.children[4].text?.trim() ?? "0") ?? 0.0
           );
           course.category.target = categories[cat];
           courses.add(course);
@@ -127,24 +128,31 @@ class CourseStore {
     await Future.wait(requests);
   }
   static Future<void> fetchGradeHistory() async {
-    Map<String, Course> courseMap = .fromEntries(_box.getAll().map(
-      (c) { c.grade = null; return MapEntry(c.code, c); }
-    ));
-    final gradeHistoryDoc = parseHtmlDocument(await WebView.request(
-        "https://vtopcc.vit.ac.in/vtop/examinations/examGradeView/StudentGradeHistory",
-        { "verifyMenu": "true" }
-    ));
+    try {
+      Map<String, Course> courseMap = .fromEntries(_box.getAll().map(
+        (c) { c.grade = null; return MapEntry(c.code, c); }
+      ));
+      final gradeHistoryDoc = parseHtmlDocument(await WebView.request(
+          "https://vtopcc.vit.ac.in/vtop/examinations/examGradeView/StudentGradeHistory",
+          { "verifyMenu": "true" }
+      ));
 
-    final rows = (gradeHistoryDoc.querySelectorAll('table.customTable')[1])
-      .querySelectorAll('tr.tableContent');
-
-    for (var row in rows) {
-      if (row.id.isNotEmpty) continue;
-      final code = row.children[1].text!.trim();
-      final grade = row.children[5].text!.trim();
-      courseMap[code]!.grade = grade;
+      final tables = gradeHistoryDoc.querySelectorAll('table.customTable');
+      if (tables.length > 1) {
+        final rows = tables[1].querySelectorAll('tr.tableContent');
+        for (var row in rows) {
+          if (row.id.isNotEmpty || row.children.length < 6) continue;
+          final code = row.children[1].text?.trim() ?? "";
+          final grade = row.children[5].text?.trim();
+          if (courseMap.containsKey(code)) {
+            courseMap[code]!.grade = grade;
+          }
+        }
+        _box.putMany(courseMap.values.toList());
+      }
+    } catch (e) {
+      print("fetchGradeHistory error: $e");
     }
-    _box.putMany(courseMap.values.toList());
   }
 
   static List<CourseCategory> getCategories() => _catBox.getAll();

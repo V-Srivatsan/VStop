@@ -1,5 +1,5 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 import 'package:vstop/lib/webview.dart';
@@ -18,15 +18,36 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
 
   final _key = GlobalKey<FormBuilderState>();
-  bool loading = true, showPassword = false;
-  Uint8List? captcha; String? error;
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _captchaController = TextEditingController();
 
-  bool first = true; int tries = 0;
+  bool loading = true, showPassword = false;
+  Uint8List? captcha;
+  String? captchaStr;
+  String? error;
+
+  int tries = 0;
 
   void submitForm() {
-    if (!_key.currentState!.saveAndValidate()) return;
-    final data = _key.currentState!.value;
-    logic.login(data['username'], data['password'], data['captcha']);
+    TextInput.finishAutofillContext();
+    _key.currentState?.save();
+
+    final u = _usernameController.text.trim().isNotEmpty
+        ? _usernameController.text.trim()
+        : (_key.currentState?.value['username']?.toString().trim() ?? '');
+    final p = _passwordController.text.trim().isNotEmpty
+        ? _passwordController.text.trim()
+        : (_key.currentState?.value['password']?.toString().trim() ?? '');
+    final c = _captchaController.text.trim().isNotEmpty
+        ? _captchaController.text.trim()
+        : (_key.currentState?.value['captcha']?.toString().trim() ?? (captchaStr ?? ''));
+
+    if (u.isEmpty || p.isEmpty) {
+      setState(() { error = "Please enter username and password"; loading = false; });
+      return;
+    }
+    logic.login(u, p, c.isNotEmpty ? c : null);
     setState(() { loading = true; error = null; });
   }
 
@@ -35,96 +56,154 @@ class _LoginFormState extends State<LoginForm> {
     super.initState();
 
     logic.getCred().then((value) {
-      if (value == null) return;
-      _key.currentState!.patchValue({'username': value.$1, 'password': value.$2});
+      if (value == null || !mounted) return;
+      _usernameController.text = value.$1;
+      _passwordController.text = value.$2;
+      _key.currentState?.patchValue({'username': value.$1, 'password': value.$2});
+    });
+
+    // Safety fallback: ensure loading spinner never traps the user indefinitely
+    Future.delayed(const Duration(seconds: 10), () {
+      if (mounted && loading) {
+        setState(() { loading = false; });
+      }
     });
 
     WebView.initialize(onPageLoad: (url) async {
-      if (url != WebView.homeUrl && url != WebView.loginUrl && url != WebView.loginErrorUrl) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("An unexpected error occurred!")));
-        return;
-      }
+      print("WebView onPageLoad: $url");
+      if (url.contains('/init/page') || url.contains('/prelogin/') || url.contains('/open/page')) return;
 
-      if (url == WebView.homeUrl) {
-        if (first) { first = false; return; }
-        await WebView.setAuth();
+      if (url.contains('/content')) {
+        print("Login succeeded! Navigating to sync...");
+        final username = _usernameController.text.trim().isNotEmpty
+            ? _usernameController.text.trim()
+            : (_key.currentState?.value['username']?.toString().trim() ?? '');
+        final password = _passwordController.text.trim().isNotEmpty
+            ? _passwordController.text.trim()
+            : (_key.currentState?.value['password']?.toString().trim() ?? '');
+        await WebView.setAuth(username);
 
-        final formData = _key.currentState!.value;
-        await logic.saveCred(formData['username'], formData['password']);
+        if (username.isNotEmpty && password.isNotEmpty) {
+          await logic.saveCred(username, password);
+        }
         if (mounted) widget.onAuth(context);
         return;
       }
 
-      captcha = await logic.getCaptcha();
-      if (captcha != null) {
-        final captchaStr = await logic.getCaptchaStr(captcha!);
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _key.currentState!.patchValue({'captcha': captchaStr});
-          if (tries < 5) submitForm();
-        });
-      } else WidgetsBinding.instance.addPostFrameCallback((_) { if (tries < 5) submitForm(); });
-
-      if (url == WebView.loginErrorUrl) { 
+      if (url.contains('/login/error')) { 
         error = await logic.getLoginError();
-        if (_key.currentState!.value["username"].isNotEmpty)
+        print("Login error: $error");
+        final user = _usernameController.text.trim().isNotEmpty
+            ? _usernameController.text.trim()
+            : (_key.currentState?.value['username']?.toString().trim() ?? '');
+        if (user.isNotEmpty) {
           tries += (error?.contains('Captcha') ?? false) ? 1 : 1000;
+        }
       }
 
-      if (mounted) setState(() { loading = false; });
+      // Retry fetching captcha up to 10 times (up to 2.5s) if DOM is still rendering
+      for (int i = 0; i < 10; i++) {
+        captcha = await logic.getCaptcha();
+        if (captcha != null) break;
+        await Future.delayed(const Duration(milliseconds: 250));
+      }
+
+      if (captcha != null) {
+        final decoded = await logic.getCaptchaStr(captcha!);
+        captchaStr = decoded;
+        if (mounted) {
+          _captchaController.text = decoded;
+          _key.currentState?.patchValue({'captcha': decoded});
+          setState(() {
+            this.captcha = captcha;
+            captchaStr = decoded;
+            loading = false;
+          });
+
+          final u = _usernameController.text.trim().isNotEmpty
+              ? _usernameController.text.trim()
+              : (_key.currentState?.value['username']?.toString().trim() ?? '');
+          final p = _passwordController.text.trim().isNotEmpty
+              ? _passwordController.text.trim()
+              : (_key.currentState?.value['password']?.toString().trim() ?? '');
+
+          if (u.isNotEmpty && p.isNotEmpty && tries < 5) {
+            submitForm();
+            return;
+          }
+        }
+      } else {
+        if (mounted) setState(() { loading = false; });
+      }
     });
   }
 
   @override
   void dispose() {
-    logic.free(); WebView.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _captchaController.dispose();
+    logic.free();
+    WebView.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final res = FormBuilder(
-      key: _key,
-      child: Column(
-        mainAxisSize: .min, spacing: 10,
-        crossAxisAlignment: .stretch,
-        children: [
+    final res = AutofillGroup(
+      child: FormBuilder(
+        key: _key,
+        child: Column(
+          mainAxisSize: .min, spacing: 10,
+          crossAxisAlignment: .stretch,
+          children: [
 
-          FormBuilderTextField(
-            name: "username", textCapitalization: .characters,
-            decoration: InputDecoration(labelText: "V-TOP Username"),
-          ),
-
-          FormBuilderTextField(
-            name: "password", obscureText: !showPassword,
-            decoration: InputDecoration(
-              labelText: "Password",
-              suffixIcon: IconButton(
-                onPressed: () => setState(() => showPassword = !showPassword),
-                icon: Icon(showPassword ? Icons.visibility_off : Icons.visibility)
-              )
-            ),
-          ),
-
-          ...(captcha == null ? [] : [
-            Image.memory(captcha!),
             FormBuilderTextField(
-              name: "captcha", textCapitalization: .characters,
-              decoration: InputDecoration(labelText: "Captcha"),
-            )
-          ]),
+              name: "username",
+              controller: _usernameController,
+              textCapitalization: TextCapitalization.characters,
+              autofillHints: const [AutofillHints.username],
+              keyboardType: TextInputType.text,
+              decoration: const InputDecoration(labelText: "V-TOP Username"),
+            ),
 
-          if (error != null)
-            Text(error!, style: TextStyle(color: Colors.red, fontWeight: .bold), textAlign: .center),
+            FormBuilderTextField(
+              name: "password",
+              controller: _passwordController,
+              obscureText: !showPassword,
+              autofillHints: const [AutofillHints.password],
+              decoration: InputDecoration(
+                labelText: "Password",
+                suffixIcon: IconButton(
+                  onPressed: () => setState(() => showPassword = !showPassword),
+                  icon: Icon(showPassword ? Icons.visibility_off : Icons.visibility)
+                )
+              ),
+            ),
 
-          FilledButton(
-            onPressed: loading ? null : submitForm,
-            child: !loading ? Text("Sync with V-TOP") :
-                Row(mainAxisAlignment: .spaceBetween, spacing: 10, children: [
-                  Text("Loading V-Top..."), CircularProgressIndicator(constraints: .tight(Size(25, 25)))
-                ],)
-          ),
+            ...(captcha == null ? [] : [
+              Image.memory(captcha!),
+              FormBuilderTextField(
+                name: "captcha",
+                controller: _captchaController,
+                textCapitalization: TextCapitalization.characters,
+                decoration: const InputDecoration(labelText: "Captcha"),
+              )
+            ]),
 
-        ],
+            if (error != null)
+              Text(error!, style: TextStyle(color: Colors.red, fontWeight: .bold), textAlign: .center),
+
+            FilledButton(
+              onPressed: loading ? null : submitForm,
+              child: !loading ? Text("Sync with V-TOP") :
+                  Row(mainAxisAlignment: .spaceBetween, spacing: 10, children: [
+                    Text("Loading V-Top..."), CircularProgressIndicator(constraints: .tight(Size(25, 25)))
+                  ],)
+            ),
+
+          ],
+        ),
       ),
     );
 

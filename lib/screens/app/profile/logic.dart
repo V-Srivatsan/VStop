@@ -8,6 +8,7 @@ import 'package:vstop/lib/notification.dart';
 import 'package:vstop/lib/store.dart';
 import 'package:vstop/lib/worker.dart';
 
+import 'package:vstop/lib/webview.dart';
 import 'package:vstop/screens/login/index.dart' as auth;
 import 'package:vstop/screens/sync/index.dart' as sync;
 import 'package:vstop/screens/login/form.dart';
@@ -22,6 +23,7 @@ Future<void> logout(BuildContext context) async {
   Database.clear(); await PrefStore.setTheme(.system);
   await PrefStore.clear();
   await SecureStorage.clear();
+  await WebView.clearSession();
   await NotificationController.cancelNotifications([
     NotificationController.CLASS_REMINDER_CHANNEL,
     NotificationController.EXAM_REMINDER_CHANNEL,

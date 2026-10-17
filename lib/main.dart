@@ -18,13 +18,26 @@ import 'screens/splash/index.dart' as splash;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await Database.init(); await PrefStore.getTheme();
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    FirebaseMessaging.onBackgroundMessage(FCMBackground);
+  } catch (e) {
+    debugPrint('Firebase initialization error: $e');
+  }
+  try {
+    await Database.init();
+    await PrefStore.getTheme();
+  } catch (e) {
+    debugPrint('Database init error: $e');
+  }
 
-  FirebaseMessaging.onBackgroundMessage(FCMBackground);
-  await NotificationController.initialize();
-  executeTask(SCHEDULE_NOTIFICATIONS_TASK);
-  Workmanager().initialize(callbackDispatcher);
+  try {
+    await NotificationController.initialize();
+    executeTask(SCHEDULE_NOTIFICATIONS_TASK);
+    Workmanager().initialize(callbackDispatcher);
+  } catch (e) {
+    debugPrint('Worker/Notification init error: $e');
+  }
 
   runApp(ValueListenableBuilder<AppTheme>(
     valueListenable: PrefStore.theme,
