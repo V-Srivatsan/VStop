@@ -48,7 +48,7 @@ class _ScreenState extends State<Screen> {
 
     if (success) {
       await logic.syncCalendar();
-      getData();
+      if (context.mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Screen()));
     }
   }
 
