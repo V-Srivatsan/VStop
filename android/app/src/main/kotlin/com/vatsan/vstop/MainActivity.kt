@@ -1,4 +1,4 @@
-package com.vatsan.vstop.vstop
+package com.vatsan.vstop
 
 import io.flutter.embedding.android.FlutterActivity
 
