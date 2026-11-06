@@ -3,7 +3,7 @@ import 'package:vstop/lib/db.dart';
 import 'package:vstop/lib/store.dart';
 import 'package:vstop/lib/worker.dart';
 import 'package:vstop/lib/notification.dart';
-import 'package:vstop/screens/app/home/timetable/logic.dart' show getSchedule;
+import 'package:vstop/screens/app/home/timetable/logic.dart' show getSchedule, ScheduleClass;
 
 Future<void> scheduleNotifications() async {
   final String sem;
@@ -32,12 +32,12 @@ Future<void> scheduleNotifications() async {
 
   final courses = Timetable(sem).getCourses();
   for (var entry in entries)
-    for (var slot in entry.weekday != null ? getSchedule(courses, entry.weekday!) : [])
+    for (var slot in entry.weekday != null ? getSchedule(courses, entry.weekday!) : <ScheduleClass>[])
       NotificationController.showNotification(
           id: 'class_${entry.date}_${slot.start}',
           channel: NotificationController.CLASS_REMINDER_CHANNEL,
           title: 'Next Class: ${slot.entry.course.target!.name}',
-          body: '${formatTime(slot.start)} - ${formatTime(slot.end)}',
+          body: '${slot.entry.venue} | ${formatTime(slot.start)} - ${formatTime(slot.end)}',
           schedule: .parse(entry.date).add(slot.start - Duration(minutes: 15))
       );
 
@@ -48,7 +48,7 @@ Future<void> scheduleNotifications() async {
         channel: NotificationController.EXAM_REMINDER_CHANNEL,
         schedule: .parse(exam.date).add(Duration(hours: parts[0], minutes: parts[1]) - Duration(minutes: 30)),
         title: 'Upcoming Exam: ${exam.course}',
-        body: '${exam.venue}, ${exam.seatNo} (${exam.seatLoc})'
+        body: '${exam.venue} | ${exam.seatNo} (${exam.seatLoc})'
     );
   }
 
