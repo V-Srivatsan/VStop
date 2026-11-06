@@ -37,16 +37,21 @@ Map<String, int> getSlotCounts(String sem) {
   return slotCounts;
 }
 
-int getSkippable(TimetableEntry entry, double thres, Map<String, int> slotCounts) {
-  int present = entry.present.length;
-  int total = entry.present.length + entry.absent.length;
+int getSkippable(double thres, Map<String, int> slotCounts, {
+  TimetableEntry? entry, int total_present = 0, int total_absent = 0
+}) {
+  int present = entry?.present.length ?? total_present;
+  int total = (entry?.present.length ?? total_present) + (entry?.absent.length ?? total_absent);
   int extra = 0;
 
-  for (var slot in entry.slots)
-    extra += slotCounts[slot] ?? 0;
+  if (entry != null)
+    for (var slot in entry.slots)
+      extra += slotCounts[slot] ?? 0;
+  else
+    extra = slotCounts.values.fold(0, (a, b) => a + b);
 
   int expected = (thres * (total + extra)).ceil();
   int res = (present + extra) - expected;
 
-  return res >> (entry.isLab ? 1 : 0);
+  return res >> (entry != null && entry.isLab ? 1 : 0);
 }

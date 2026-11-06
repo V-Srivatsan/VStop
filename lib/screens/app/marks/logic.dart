@@ -5,26 +5,6 @@ import 'mark_tile.dart';
 import 'package:vstop/lib/db.dart';
 import 'package:vstop/screens/login/form.dart';
 
-void syncMarks(
-  BuildContext ctx, String sem,
-  void Function(bool, Map<Course, List<TimetableEntry>>) setState
-) {
-
-  showDialog(context: ctx, builder: (context) => AlertDialog(
-    title: Text("Sync Marks"),
-    content: LoginForm(onAuth: (_) async {
-      if (context.mounted) Navigator.pop(context);
-      setState(true, {});
-
-      final store = MarkStore(sem); await store.fetch();
-      await MarkStore.syncToFirestore(store.getCourseMap());
-
-      setState(false, store.getCourseMap());
-    }),
-  ));
-}
-
-
 Widget getMarkTile(BuildContext ctx, {
   required Course course, required List<TimetableEntry> entries,
   required bool predict, required bool aceGrading, required void Function() refresh

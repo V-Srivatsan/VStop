@@ -1,22 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:vstop/lib/db.dart';
 import 'package:vstop/lib/worker.dart';
 import 'package:vstop/lib/store.dart';
-import 'package:vstop/screens/login/form.dart';
 
-import 'index.dart' as calendar;
-
-void syncCalendar(BuildContext ctx) {
-  showDialog(context: ctx, builder: (_) => AlertDialog(
-    title: Text("Sync Calendar"),
-    content: LoginForm(onAuth: (context) async {
-      final sem = await PrefStore.getSem();
-      await Future.wait([AcademicCalendar.fetch(sem), AcademicCalendar.fetchExamSchedule(sem)]);
-      executeTask(SCHEDULE_NOTIFICATIONS_TASK);
-      if (context.mounted) Navigator.pop(context);
-      if (ctx.mounted) Navigator.pushReplacement(ctx, MaterialPageRoute(builder: (_) => calendar.Screen()));
-    }),
-  ));
+Future<void> syncCalendar() async {
+  final sem = await PrefStore.getSem();
+  await Future.wait([AcademicCalendar.fetch(sem), AcademicCalendar.fetchExamSchedule(sem)]);
+  executeTask(SCHEDULE_NOTIFICATIONS_TASK);
 }
 
 List<CalendarEntry> getEntries() => AcademicCalendar.getEntries();

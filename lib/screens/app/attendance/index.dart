@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:vstop/screens/login/form.dart';
 import 'package:vstop/widgets/display_card.dart';
@@ -19,9 +20,9 @@ class _ScreenState extends State<Screen> {
   
   String sem = ""; int thres = 0;
   List<TimetableEntry> courses = [];
-  bool syncing = false;
-
   late final Map<String, int> slots;
+
+  final _sync_key = GlobalKey<RefreshIndicatorState>();
 
   void getCourses() {
     final lst = Timetable(sem).getCourses().where((e) => !e.percentage.isNaN).toList();
@@ -29,26 +30,29 @@ class _ScreenState extends State<Screen> {
     else courses = lst;
   }
 
+  Future<void> sync() async {
+    final success = await showDialog(context: context, builder: (_) => AlertDialog(
+      title: Text("Sync Attendance"),
+      content: LoginForm(onAuth: (ctx) async {
+        if (ctx.mounted) Navigator.pop(ctx, true);
+      })
+    ));
+
+    if (success) {
+      await Timetable(sem).fetchAttendance();
+      getCourses();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (context.mounted)
-        widget.updateActions([
-          IconButton(onPressed: () {
-            showDialog(context: context, builder: (_) => AlertDialog(
-              title: Text("Sync Attendance"),
-              content: LoginForm(onAuth: (ctx) async {
-                if (ctx.mounted) Navigator.pop(ctx);
-                setState(() => syncing = true);
-
-                await Timetable(sem).fetchAttendance();
-                syncing = false;
-                getCourses();
-              })
-            ));
-          }, icon: Icon(Icons.sync)),
-        ]);
+        widget.updateActions([IconButton(
+          onPressed: () => _sync_key.currentState?.show(),
+          icon: Icon(Icons.sync)
+        )]);
     });
 
     () async {
@@ -65,60 +69,50 @@ class _ScreenState extends State<Screen> {
       padding: .symmetric(horizontal: 20, vertical: 10),
       child: (
         sem.isEmpty ? Center(child: CircularProgressIndicator()) :
-        syncing ? Center(child: Column(
-          mainAxisSize: .min, spacing: 10,
-          children: [
-            CircularProgressIndicator(),
-            Text("Syncing...")
-          ],
-        )) :
+        RefreshIndicator(
+          key: _sync_key, onRefresh: sync,
+          child: CustomScrollView(slivers: [
+            SliverToBoxAdapter(child: Column(
+              mainAxisSize: .min, crossAxisAlignment: .stretch,
+              children: [
 
-        CustomScrollView(slivers: [
-
-          SliverToBoxAdapter(child: Column(
-            mainAxisSize: .min, crossAxisAlignment: .stretch,
-            children: [
-
-              Row(
-                mainAxisAlignment: .spaceBetween, spacing: 10,
-                children: [
-                  DisplayCard(
-                    label: "OD Used",
-                    child: Text(
-                      '${courses.fold(0, (prev, e) => prev + e.od_used).toString()} / 40',
-                      style: Theme.of(context).textTheme.headlineMedium
-                    )
-                  ),
-
-                  DisplayCard(
-                    label: "Threshold",
-                    onTap: () async {
-                      final res = await showDialog(context: context, builder: (_) => UpdateThreshold(thres));
-                      if (res != null) setState(() => thres = res);
-                    },
-                    child: Text(
-                      '$thres%',
-                      style: Theme.of(context).textTheme.headlineMedium,
+                Row(
+                  mainAxisAlignment: .spaceBetween, spacing: 10,
+                  children: [
+                    DisplayCard(
+                        label: "OD Used",
+                        child: Text(
+                            '${courses.fold(0, (prev, e) => prev + e.od_used).toString()} / 40',
+                            style: Theme.of(context).textTheme.headlineMedium
+                        )
                     ),
-                  )
-                ],
+
+                    DisplayCard(
+                      label: "Threshold",
+                      onTap: () async {
+                        final res = await showDialog(context: context, builder: (_) => UpdateThreshold(thres));
+                        if (res != null) setState(() => thres = res);
+                      },
+                      child: Text('$thres%', style: Theme.of(context).textTheme.headlineMedium),
+                    )
+                  ],
+                ),
+
+                SizedBox(height: 15)
+              ]
+            )),
+
+            SliverList.builder(
+              itemCount: courses.length,
+              itemBuilder: (_, i) => AttendanceTile(
+                  courses[i], thres: thres / 100,
+                  skippable: logic.getSkippable(thres / 100, slots, entry: courses[i])
               ),
+            )
 
-              SizedBox(height: 15)
-            ]
-          )),
-
-          SliverList.builder(
-            itemCount: courses.length,
-            itemBuilder: (_, i) => AttendanceTile(
-                courses[i], thres: thres / 100,
-                skippable: logic.getSkippable(courses[i], thres / 100, slots)
-            ),
-          )
-
-        ])
-
-      ),
+          ])
+        )
+      )
     );
   }
 }

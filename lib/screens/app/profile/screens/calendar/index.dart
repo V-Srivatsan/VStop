@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:vstop/screens/login/form.dart';
 import 'package:vstop/lib/db.dart';
 import 'package:vstop/lib/store.dart';
 
@@ -22,9 +23,9 @@ class _ScreenState extends State<Screen> {
   Map<String, List<Assignment>> assignments = {};
   String? key;
 
-  @override
-  void initState() {
-    super.initState();
+  final _sync_key = GlobalKey<RefreshIndicatorState>();
+
+  void getData() {
     entries = .fromEntries(logic.getEntries().map((e) => MapEntry(e.date, e)));
     exams = {};
     key = DateFormat("yyyyMMdd").format(.now());
@@ -39,6 +40,24 @@ class _ScreenState extends State<Screen> {
     });
   }
 
+  Future<void> sync() async {
+    final success = await showDialog(context: context, builder: (_) => AlertDialog(
+      title: Text("Sync Calendar"),
+      content: LoginForm(onAuth: (ctx) => Navigator.pop(ctx, true)),
+    ));
+
+    if (success) {
+      await logic.syncCalendar();
+      getData();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,22 +65,24 @@ class _ScreenState extends State<Screen> {
         title: Text("Calendar"),
         actions: [
           IconButton(
-            onPressed: () => logic.syncCalendar(context),
+            onPressed: () => _sync_key.currentState?.show(),
             icon: Icon(Icons.sync)
           )
         ],
       ),
       body: SafeArea(child: Padding(
         padding: .symmetric(horizontal: 20, vertical: 10),
-        child: Column(
-          spacing: 20,
-          children: [
-
-            Calendar(entries: entries, exams: exams, assignments: assignments, onSelect: (key) => setState(() => this.key = key)),
-            Details(entries: entries, exams: exams, assignments: assignments, date: key)
-
-          ],
-        ),
+        child: RefreshIndicator(
+          key: _sync_key,
+          onRefresh: sync,
+          child: Column(
+            spacing: 20,
+            children: [
+              Calendar(entries: entries, exams: exams, assignments: assignments, onSelect: (key) => setState(() => this.key = key)),
+              Details(entries: entries, exams: exams, assignments: assignments, date: key)
+            ],
+          ),
+        )
       )),
     );
   }
