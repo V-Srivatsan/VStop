@@ -46,7 +46,7 @@ Future<void> updateTheme(BuildContext context) async {
 
   showDialog(context: context, builder: (ctx) => AlertDialog(
     title: Text("Change Theme"),
-    content: GridView.count(
+    content: SizedBox(width: .maxFinite, child: GridView.count(
       shrinkWrap: true,
       crossAxisCount: 2, crossAxisSpacing: 10,
       children: [
@@ -70,7 +70,7 @@ Future<void> updateTheme(BuildContext context) async {
             )),
           )
       ],
-    )
+    ))
   ));
 }
 
