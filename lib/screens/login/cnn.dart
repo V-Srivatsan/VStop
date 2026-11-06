@@ -61,6 +61,6 @@ class CaptchaDecoder {
     return predictedText;
   }
 
-  static void close() { _interpreter!.close(); _interpreter = null; }
+  static void close() { _interpreter?.close(); _interpreter = null; }
 
 }

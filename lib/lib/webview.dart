@@ -8,6 +8,9 @@ class WebView {
   static const String loginErrorUrl = "https://vtopcc.vit.ac.in/vtop/login/error";
   static const String homeUrl = "https://vtopcc.vit.ac.in/vtop/content";
 
+  static DateTime? _last_requested;
+  static bool get expired => _last_requested == null || DateTime.now().difference(_last_requested!) > const Duration(minutes: 10);
+
   static final Client _client = Client();
   static HeadlessInAppWebView? _webview;
   static InAppWebViewController? controller;
@@ -59,6 +62,7 @@ class WebView {
     final res = await _client.post(Uri.parse(url), body: body, headers: headers);
 
     if (res.statusCode >= 300) throw Exception("Request failed: $url");
+    _last_requested = .now();
     return res.body;
   }
 }

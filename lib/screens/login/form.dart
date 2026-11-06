@@ -34,6 +34,8 @@ class _LoginFormState extends State<LoginForm> {
   void initState() {
     super.initState();
 
+    if (!WebView.expired) { widget.onAuth(context); return; }
+
     logic.getCred().then((value) {
       if (value == null) return;
       _key.currentState!.patchValue({'username': value.$1, 'password': value.$2});
