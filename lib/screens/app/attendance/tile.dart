@@ -12,7 +12,10 @@ class AttendanceTile extends StatelessWidget {
 
     return Card(child: ListTile(
       title: Text(entry.course.target!.name),
-      subtitle: Text("Skip: $skippable", style: Theme.of(context).textTheme.bodySmall),
+      subtitle: Text(
+          skippable >= 0 ? "Skip: $skippable" : "Unrecoverable",
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: skippable < 0 ? Theme.of(context).colorScheme.error : null)
+      ),
       leading: Icon(entry.isLab ? Icons.science : Icons.book),
       trailing: Stack(
         alignment: .center,

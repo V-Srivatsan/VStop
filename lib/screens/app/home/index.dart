@@ -23,12 +23,14 @@ class _ScreenState extends State<Screen> {
   String? user; Semester? sem;
   List<tt_logic.ScheduleClass> classes = [];
   List<ExamEntry> exams = [];
+  int thres = 75;
 
   @override
   void initState() {
     super.initState();
     () async {
       final name = await PrefStore.getName();
+      final att = await PrefStore.getAttThreshold();
       final timetable = Timetable(await PrefStore.getSem());
       final weekday = tt_logic.getTodayWeekday();
       final schedule = weekday == null ? <tt_logic.ScheduleClass>[] : tt_logic.getSchedule(timetable.getCourses(), weekday);
@@ -36,22 +38,13 @@ class _ScreenState extends State<Screen> {
       final today = DateFormat("yyyyMMdd").format(.now());
       final ex = AcademicCalendar.getSchedule().where((e) => e.date == today).toList();
 
-      if (!mounted) { user = name; classes = schedule; sem = timetable.sem; exams = ex; }
-      else setState(() { user = name; classes = schedule; sem = timetable.sem; exams = ex; });
+      if (!mounted) { user = name; classes = schedule; sem = timetable.sem; exams = ex; thres = att; }
+      else setState(() { user = name; classes = schedule; sem = timetable.sem; exams = ex; thres = att; });
     }();
   }
 
   @override
   Widget build(BuildContext context) {
-
-    tt_logic.ScheduleClass? nextClass;
-    final now = Duration(hours: DateTime.now().hour, minutes: DateTime.now().minute);
-    for (final c in classes) {
-      if (c.start > now) {
-        nextClass = c;
-        break;
-      }
-    }
 
     return user == null ? Center(child: CircularProgressIndicator()) :
       SafeArea(child: SingleChildScrollView(
@@ -80,7 +73,7 @@ class _ScreenState extends State<Screen> {
                 ],
               ),
 
-              Overview(sem, nextClass),
+              Overview(sem, classes, thres: thres),
 
               Column(
                 mainAxisSize: .min, crossAxisAlignment: .stretch,
